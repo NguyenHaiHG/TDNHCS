@@ -1,0 +1,201 @@
+﻿<Window x:Class="TDNHCS.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:TDNHCS"
+        mc:Ignorable="d"
+        Title="Hệ thống Quản lý Văn bản" Height="600" Width="1000"
+        WindowStartupLocation="CenterScreen">
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+    </Window.Resources>
+
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Tiêu đề -->
+        <TextBlock Grid.Row="0" 
+                   Text="HỆ THỐNG QUẢN LÝ VĂN BẢN"
+                   FontSize="24" FontWeight="Bold"
+                   HorizontalAlignment="Center"
+                   Margin="0,0,0,20"
+                   Foreground="#2C3E50"/>
+
+        <!-- Thanh tìm kiếm và nút chức năng -->
+        <Grid Grid.Row="1" Margin="0,0,0,10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- Dòng 1: Tìm kiếm và CRUD -->
+            <TextBox Grid.Row="0" Grid.Column="0" 
+                     Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
+                     FontSize="14"
+                     Padding="8"
+                     VerticalContentAlignment="Center"
+                     Margin="0,0,10,5">
+                <TextBox.InputBindings>
+                    <KeyBinding Key="Enter" Command="{Binding SearchCommand}"/>
+                </TextBox.InputBindings>
+            </TextBox>
+
+            <Button Grid.Row="0" Grid.Column="1" 
+                    Content="🔍 Tìm kiếm"
+                    Command="{Binding SearchCommand}"
+                    Padding="15,8"
+                    Margin="0,0,5,5"
+                    Background="#3498DB"
+                    Foreground="White"
+                    BorderThickness="0"
+                    Cursor="Hand"/>
+
+            <Button Grid.Row="0" Grid.Column="2" 
+                    Content="➕ Thêm"
+                    Command="{Binding AddDocumentCommand}"
+                    Padding="15,8"
+                    Margin="0,0,5,5"
+                    Background="#27AE60"
+                    Foreground="White"
+                    BorderThickness="0"
+                    Cursor="Hand"/>
+
+            <Button Grid.Row="0" Grid.Column="3" 
+                    Content="✏️ Sửa"
+                    Command="{Binding EditDocumentCommand}"
+                    Padding="15,8"
+                    Margin="0,0,5,5"
+                    Background="#F39C12"
+                    Foreground="White"
+                    BorderThickness="0"
+                    Cursor="Hand"/>
+
+            <Button Grid.Row="0" Grid.Column="4" 
+                    Content="🗑️ Xóa"
+                    Command="{Binding DeleteDocumentCommand}"
+                    Padding="15,8"
+                    Margin="0,0,0,5"
+                    Background="#E74C3C"
+                    Foreground="White"
+                    BorderThickness="0"
+                    Cursor="Hand"/>
+
+            <!-- Dòng 2: Chức năng mở rộng -->
+            <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="5" 
+                        Orientation="Horizontal" 
+                        HorizontalAlignment="Right">
+
+                <Button Content="📊 Thống kê"
+                        Command="{Binding ShowStatisticsCommand}"
+                        Padding="15,8"
+                        Margin="0,0,5,0"
+                        Background="#9B59B6"
+                        Foreground="White"
+                        BorderThickness="0"
+                        Cursor="Hand"/>
+
+                <Button Content="📤 Xuất Excel"
+                        Command="{Binding ExportExcelCommand}"
+                        Padding="15,8"
+                        Margin="0,0,5,0"
+                        Background="#16A085"
+                        Foreground="White"
+                        BorderThickness="0"
+                        Cursor="Hand"/>
+
+                <Button Content="🖨️ In"
+                        Command="{Binding PrintCommand}"
+                        Padding="15,8"
+                        Background="#34495E"
+                        Foreground="White"
+                        BorderThickness="0"
+                        Cursor="Hand"/>
+            </StackPanel>
+        </Grid>
+
+        <!-- DataGrid hiển thị danh sách văn bản -->
+        <DataGrid Grid.Row="2"
+                  ItemsSource="{Binding Documents}"
+                  SelectedItem="{Binding SelectedDocument}"
+                  AutoGenerateColumns="False"
+                  CanUserAddRows="False"
+                  IsReadOnly="True"
+                  SelectionMode="Single"
+                  AlternatingRowBackground="#F8F9FA"
+                  GridLinesVisibility="Horizontal"
+                  HeadersVisibility="Column"
+                  FontSize="13">
+
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Số VB" 
+                                    Binding="{Binding DocumentNumber}" 
+                                    Width="120"/>
+
+                <DataGridTextColumn Header="Tiêu đề" 
+                                    Binding="{Binding Title}" 
+                                    Width="*"/>
+
+                <DataGridTextColumn Header="Loại VB" 
+                                    Binding="{Binding Type}" 
+                                    Width="100"/>
+
+                <DataGridTextColumn Header="Danh mục" 
+                                    Binding="{Binding Category.Name}" 
+                                    Width="120"/>
+
+                <DataGridTextColumn Header="Ngày ban hành" 
+                                    Binding="{Binding IssueDate, StringFormat=dd/MM/yyyy}" 
+                                    Width="110"/>
+
+                <DataGridTextColumn Header="Ngày nhận" 
+                                    Binding="{Binding ReceivedDate, StringFormat=dd/MM/yyyy}" 
+                                    Width="110"/>
+
+                <DataGridTextColumn Header="Người tạo" 
+                                    Binding="{Binding CreatedBy}" 
+                                    Width="120"/>
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <!-- Thanh trạng thái -->
+        <StatusBar Grid.Row="3" Margin="0,10,0,0">
+            <StatusBarItem>
+                <TextBlock>
+                    <Run Text="Tổng số văn bản: "/>
+                    <Run Text="{Binding Documents.Count, Mode=OneWay}" FontWeight="Bold"/>
+                </TextBlock>
+            </StatusBarItem>
+            <Separator/>
+            <StatusBarItem>
+                <TextBlock Text="{Binding SelectedDocument.Title, StringFormat='Đang chọn: {0}'}" 
+                           FontStyle="Italic"/>
+            </StatusBarItem>
+        </StatusBar>
+
+        <!-- Loading Overlay -->
+        <Grid Grid.RowSpan="4" 
+              Background="#80000000" 
+              Visibility="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                <TextBlock Text="⏳ Đang tải dữ liệu..." 
+                           FontSize="20" 
+                           Foreground="White" 
+                           FontWeight="Bold"/>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Window>

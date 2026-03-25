@@ -1,0 +1,149 @@
+<Window x:Class="TDNHCS.Views.DocumentDetailWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="Chi tiết Văn bản" Height="700" Width="800"
+        WindowStartupLocation="CenterScreen"
+        Background="#F5F5F5">
+    
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Tiêu đề -->
+        <TextBlock Grid.Row="0" 
+                   Text="THÔNG TIN VĂN BẢN"
+                   FontSize="22" FontWeight="Bold"
+                   HorizontalAlignment="Center"
+                   Margin="0,0,0,20"
+                   Foreground="#2C3E50"/>
+
+        <!-- Form nhập liệu -->
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="0,0,0,20">
+                
+                <!-- Số văn bản -->
+                <TextBlock Text="Số văn bản *" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                <TextBox x:Name="txtDocumentNumber" 
+                         Text="{Binding Document.DocumentNumber, UpdateSourceTrigger=PropertyChanged}"
+                         FontSize="14" Padding="8" Margin="0,0,0,15"/>
+
+                <!-- Tiêu đề -->
+                <TextBlock Text="Tiêu đề văn bản *" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                <TextBox x:Name="txtTitle" 
+                         Text="{Binding Document.Title, UpdateSourceTrigger=PropertyChanged}"
+                         FontSize="14" Padding="8" Margin="0,0,0,15"/>
+
+                <!-- Loại văn bản -->
+                <TextBlock Text="Loại văn bản *" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                <ComboBox x:Name="cboType" 
+                          SelectedValue="{Binding Document.Type}"
+                          FontSize="14" Padding="8" Margin="0,0,0,15">
+                    <ComboBoxItem Content="Văn bản đến" Tag="0"/>
+                    <ComboBoxItem Content="Văn bản đi" Tag="1"/>
+                    <ComboBoxItem Content="Văn bản nội bộ" Tag="2"/>
+                </ComboBox>
+
+                <!-- Danh mục -->
+                <TextBlock Text="Danh mục *" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                <ComboBox x:Name="cboCategory" 
+                          ItemsSource="{Binding Categories}"
+                          SelectedValue="{Binding Document.CategoryId}"
+                          DisplayMemberPath="Name"
+                          SelectedValuePath="Id"
+                          FontSize="14" Padding="8" Margin="0,0,0,15"/>
+
+                <!-- Ngày ban hành -->
+                <TextBlock Text="Ngày ban hành" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                <DatePicker x:Name="dpIssueDate" 
+                            SelectedDate="{Binding Document.IssueDate}"
+                            FontSize="14" Padding="8" Margin="0,0,0,15"/>
+
+                <!-- Ngày nhận -->
+                <TextBlock Text="Ngày nhận văn bản" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                <DatePicker x:Name="dpReceivedDate" 
+                            SelectedDate="{Binding Document.ReceivedDate}"
+                            FontSize="14" Padding="8" Margin="0,0,0,15"/>
+
+                <!-- Người tạo -->
+                <TextBlock Text="Người tạo" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                <TextBox x:Name="txtCreatedBy" 
+                         Text="{Binding Document.CreatedBy, UpdateSourceTrigger=PropertyChanged}"
+                         FontSize="14" Padding="8" Margin="0,0,0,15"/>
+
+                <!-- Tóm tắt -->
+                <TextBlock Text="Tóm tắt nội dung" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                <TextBox x:Name="txtSummary" 
+                         Text="{Binding Document.Summary, UpdateSourceTrigger=PropertyChanged}"
+                         TextWrapping="Wrap"
+                         AcceptsReturn="True"
+                         MinHeight="80"
+                         FontSize="14" Padding="8" Margin="0,0,0,15"/>
+
+                <!-- Ghi chú -->
+                <TextBlock Text="Ghi chú" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                <TextBox x:Name="txtNotes" 
+                         Text="{Binding Document.Notes, UpdateSourceTrigger=PropertyChanged}"
+                         TextWrapping="Wrap"
+                         AcceptsReturn="True"
+                         MinHeight="60"
+                         FontSize="14" Padding="8" Margin="0,0,0,15"/>
+
+                <!-- File đính kèm -->
+                <TextBlock Text="File đính kèm" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                <Grid Margin="0,0,0,15">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <TextBox x:Name="txtFilePath" 
+                             Text="{Binding Document.FilePath}"
+                             IsReadOnly="True"
+                             FontSize="14" Padding="8" Margin="0,0,10,0"/>
+                    
+                    <Button Grid.Column="1" 
+                            Content="📎 Chọn file"
+                            Command="{Binding BrowseFileCommand}"
+                            Padding="10,8" Margin="0,0,10,0"
+                            Background="#3498DB" Foreground="White" BorderThickness="0" Cursor="Hand"/>
+                    
+                    <Button Grid.Column="2" 
+                            Content="👁️ Xem"
+                            Command="{Binding OpenFileCommand}"
+                            Padding="10,8"
+                            Background="#9B59B6" Foreground="White" BorderThickness="0" Cursor="Hand"/>
+                </Grid>
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- Nút chức năng -->
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <Button Grid.Column="1" 
+                    Content="💾 Lưu"
+                    Command="{Binding SaveCommand}"
+                    Padding="30,10" Margin="0,0,10,0"
+                    FontSize="14" FontWeight="SemiBold"
+                    Background="#27AE60" Foreground="White" BorderThickness="0" Cursor="Hand"/>
+
+            <Button Grid.Column="2" 
+                    Content="❌ Hủy"
+                    Command="{Binding CancelCommand}"
+                    Padding="30,10"
+                    FontSize="14" FontWeight="SemiBold"
+                    Background="#95A5A6" Foreground="White" BorderThickness="0" Cursor="Hand"/>
+        </Grid>
+    </Grid>
+</Window>

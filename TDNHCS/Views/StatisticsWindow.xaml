@@ -1,0 +1,107 @@
+<Window x:Class="TDNHCS.Views.StatisticsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="Thống kê và Báo cáo" Height="600" Width="900"
+        WindowStartupLocation="CenterScreen">
+    
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Tiêu đề -->
+        <TextBlock Grid.Row="0" 
+                   Text="📊 THỐNG KÊ VĂN BẢN"
+                   FontSize="24" FontWeight="Bold"
+                   HorizontalAlignment="Center"
+                   Margin="0,0,0,20"
+                   Foreground="#2C3E50"/>
+
+        <!-- Nội dung thống kê -->
+        <TabControl Grid.Row="1">
+            
+            <!-- Tab Tổng quan -->
+            <TabItem Header="📈 Tổng quan">
+                <Grid Margin="20">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Các ô thống kê số lượng -->
+                    <UniformGrid Grid.Row="0" Rows="1" Columns="4" Margin="0,0,0,20">
+                        <!-- Tổng số văn bản -->
+                        <Border Background="#3498DB" CornerRadius="8" Padding="20" Margin="5">
+                            <StackPanel>
+                                <TextBlock Text="📄 TỔNG VĂN BẢN" Foreground="White" FontWeight="Bold" FontSize="14"/>
+                                <TextBlock Text="{Binding TotalDocuments}" Foreground="White" FontSize="32" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,10,0,0"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Văn bản đến -->
+                        <Border Background="#27AE60" CornerRadius="8" Padding="20" Margin="5">
+                            <StackPanel>
+                                <TextBlock Text="📥 VĂN BẢN ĐẾN" Foreground="White" FontWeight="Bold" FontSize="14"/>
+                                <TextBlock Text="{Binding IncomingDocuments}" Foreground="White" FontSize="32" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,10,0,0"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Văn bản đi -->
+                        <Border Background="#E74C3C" CornerRadius="8" Padding="20" Margin="5">
+                            <StackPanel>
+                                <TextBlock Text="📤 VĂN BẢN ĐI" Foreground="White" FontWeight="Bold" FontSize="14"/>
+                                <TextBlock Text="{Binding OutgoingDocuments}" Foreground="White" FontSize="32" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,10,0,0"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Văn bản nội bộ -->
+                        <Border Background="#F39C12" CornerRadius="8" Padding="20" Margin="5">
+                            <StackPanel>
+                                <TextBlock Text="📋 VĂN BẢN NỘI BỘ" Foreground="White" FontWeight="Bold" FontSize="14"/>
+                                <TextBlock Text="{Binding InternalDocuments}" Foreground="White" FontSize="32" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,10,0,0"/>
+                            </StackPanel>
+                        </Border>
+                    </UniformGrid>
+
+                    <!-- Thống kê theo tháng -->
+                    <TextBlock Grid.Row="1" Text="Thống kê theo tháng (năm hiện tại)" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,10"/>
+                    
+                    <DataGrid Grid.Row="2"
+                              ItemsSource="{Binding MonthlyStatistics}"
+                              AutoGenerateColumns="False"
+                              IsReadOnly="True"
+                              AlternatingRowBackground="#F8F9FA">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Tháng" Binding="{Binding Month}" Width="100"/>
+                            <DataGridTextColumn Header="Văn bản đến" Binding="{Binding Incoming}" Width="*"/>
+                            <DataGridTextColumn Header="Văn bản đi" Binding="{Binding Outgoing}" Width="*"/>
+                            <DataGridTextColumn Header="Văn bản nội bộ" Binding="{Binding Internal}" Width="*"/>
+                            <DataGridTextColumn Header="Tổng" Binding="{Binding Total}" Width="*"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </TabItem>
+
+            <!-- Tab Theo danh mục -->
+            <TabItem Header="📁 Theo danh mục">
+                <Grid Margin="20">
+                    <DataGrid ItemsSource="{Binding CategoryStatistics}"
+                              AutoGenerateColumns="False"
+                              IsReadOnly="True"
+                              AlternatingRowBackground="#F8F9FA">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Danh mục" Binding="{Binding CategoryName}" Width="*"/>
+                            <DataGridTextColumn Header="Số lượng" Binding="{Binding Count}" Width="150"/>
+                            <DataGridTextColumn Header="Tỷ lệ %" Binding="{Binding Percentage, StringFormat='{}{0:F1}%'}" Width="150"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</Window>
