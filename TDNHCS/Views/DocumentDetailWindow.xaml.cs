@@ -16,4 +16,9 @@ public partial class DocumentDetailWindow : Window
             Close();
         };
     }
+
+    private void cboType_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+    {
+
+    }
 }

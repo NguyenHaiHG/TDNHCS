@@ -5,6 +5,7 @@ using Microsoft.Win32;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Windows;
+using System.Windows.Input;
 using TDNHCS.Models;
 using TDNHCS.Services;
 using TDNHCS.Views;
@@ -266,5 +267,21 @@ public partial class MainViewModel : ObservableObject
         var window = new StatisticsWindow(viewModel);
         window.ShowDialog();
     }
-}
 
+    /// <summary>
+    /// Xem nội dung văn bản trong app (không mở Word/PDF bên ngoài)
+    /// </summary>
+    [RelayCommand]
+    private void ViewDocument()
+    {
+        if (SelectedDocument == null)
+        {
+            MessageBox.Show("Vui lòng chọn văn bản cần xem!", "Thông báo",
+                MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
+        }
+
+        var window = new DocumentViewWindow(SelectedDocument);
+        window.ShowDialog();
+    }
+}

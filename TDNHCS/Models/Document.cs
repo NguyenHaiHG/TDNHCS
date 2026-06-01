@@ -3,8 +3,7 @@ namespace TDNHCS.Models;
 /// <summary>
 /// Thực thể văn bản
 /// </summary>
-public class Document
-{
+public class Document {
     public int Id { get; set; }
     
     /// <summary>
@@ -35,8 +34,8 @@ public class Document
     /// <summary>
     /// Đường dẫn file đính kèm
     /// </summary>
-    public string? FilePath { get; set; }
-    
+    public string? FilePath { get; set; } = string.Empty;
+
     /// <summary>
     /// Loại văn bản
     /// </summary>

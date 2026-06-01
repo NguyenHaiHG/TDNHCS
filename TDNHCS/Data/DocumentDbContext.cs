@@ -57,10 +57,10 @@ public class DocumentDbContext : DbContext
 
         // Seed dữ liệu mẫu
         modelBuilder.Entity<Category>().HasData(
-            new Category { Id = 1, Name = "Hành chính", Description = "Văn bản hành chính" },
-            new Category { Id = 2, Name = "Nhân sự", Description = "Văn bản nhân sự" },
-            new Category { Id = 3, Name = "Tài chính", Description = "Văn bản tài chính" },
-            new Category { Id = 4, Name = "Kỹ thuật", Description = "Văn bản kỹ thuật" }
+            new Category { Id = 1, Name = "Tín Dụng", Description = "Văn bản Tín dụng" },
+            new Category { Id = 2, Name = "Kế toán", Description = "Văn bản Kế toán" },
+            new Category { Id = 3, Name = "Kiểm tra, kiểm soát", Description = "Văn bản KTKSNB" },
+            new Category { Id = 4, Name = "Trả lời", Description = "Văn bản trả lời" }
         );
     }
 }

@@ -43,7 +43,7 @@
                 <TextBlock Text="Loại văn bản *" FontWeight="SemiBold" Margin="0,0,0,5"/>
                 <ComboBox x:Name="cboType" 
                           SelectedValue="{Binding Document.Type}"
-                          FontSize="14" Padding="8" Margin="0,0,0,15">
+                          FontSize="14" Padding="8" Margin="0,0,0,15" SelectionChanged="cboType_SelectionChanged">
                     <ComboBoxItem Content="Văn bản đến" Tag="0"/>
                     <ComboBoxItem Content="Văn bản đi" Tag="1"/>
                     <ComboBoxItem Content="Văn bản nội bộ" Tag="2"/>
