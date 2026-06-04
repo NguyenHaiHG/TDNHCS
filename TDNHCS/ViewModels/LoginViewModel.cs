@@ -1,10 +1,14 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using TDNHCS.Models;
+using TDNHCS.Services;
 
 namespace TDNHCS.ViewModels;
 
 public partial class LoginViewModel : ObservableObject
 {
+    private readonly UserService _userService;
+
     [ObservableProperty]
     private string _username = string.Empty;
 
@@ -19,10 +23,16 @@ public partial class LoginViewModel : ObservableObject
 
     public event Action? LoginSuccessful;
 
-    public static string? CurrentUser { get; private set; }
+    // Lưu thông tin user đang đăng nhập để dùng toàn app
+    public static User? CurrentUser { get; private set; }
+
+    public LoginViewModel(UserService userService)
+    {
+        _userService = userService;
+    }
 
     [RelayCommand]
-    private void Login()
+    private async Task Login()
     {
         if (string.IsNullOrWhiteSpace(Username))
         {
@@ -38,15 +48,10 @@ public partial class LoginViewModel : ObservableObject
             return;
         }
 
-        if (Username == "admin" && Password == "admin123")
+        var user = await _userService.LoginAsync(Username, Password);
+        if (user != null)
         {
-            CurrentUser = Username;
-            HasError = false;
-            LoginSuccessful?.Invoke();
-        }
-        else if (Username == "user" && Password == "user123")
-        {
-            CurrentUser = Username;
+            CurrentUser = user;
             HasError = false;
             LoginSuccessful?.Invoke();
         }

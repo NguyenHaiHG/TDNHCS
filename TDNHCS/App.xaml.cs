@@ -30,14 +30,16 @@ public partial class App : Application
         // Khởi tạo database
         await InitializeDatabaseAsync();
 
-        // Hiển thị màn hình đăng nhập
-        var loginViewModel = _serviceProvider.GetRequiredService<LoginViewModel>();
+        // Dùng scope để resolve các scoped services cho màn đăng nhập
+        using var loginScope = _serviceProvider.CreateScope();
+        var loginViewModel = loginScope.ServiceProvider.GetRequiredService<LoginViewModel>();
         var loginWindow = new LoginWindow(loginViewModel);
 
         if (loginWindow.ShowDialog() == true)
         {
-            // Đăng nhập thành công -> Hiển thị MainWindow
-            var mainWindow = _serviceProvider.GetRequiredService<MainWindow>();
+            // Đăng nhập thành công -> Hiển thị MainWindow trong scope mới
+            var mainScope = _serviceProvider.CreateScope();
+            var mainWindow = mainScope.ServiceProvider.GetRequiredService<MainWindow>();
             ShutdownMode = ShutdownMode.OnMainWindowClose;
             MainWindow = mainWindow;
             mainWindow.Show();
@@ -55,17 +57,18 @@ public partial class App : Application
         services.AddDbContext<DocumentDbContext>();
 
         // Services
-        services.AddSingleton<DocumentService>();
+        services.AddScoped<DocumentService>();
+        services.AddScoped<UserService>();
         services.AddSingleton<ExportService>();
         services.AddSingleton<PrintService>();
 
         // ViewModels
-        services.AddSingleton<MainViewModel>();
+        services.AddScoped<MainViewModel>();
         services.AddTransient<DocumentDetailViewModel>();
-        services.AddTransient<LoginViewModel>();
+        services.AddScoped<LoginViewModel>();
 
         // Views
-        services.AddSingleton<MainWindow>();
+        services.AddScoped<MainWindow>();
     }
 
     private async Task InitializeDatabaseAsync()

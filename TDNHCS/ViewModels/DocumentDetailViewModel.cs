@@ -62,35 +62,19 @@ public partial class DocumentDetailViewModel : ObservableObject
 
         if (dialog.ShowDialog() == true)
         {
-            var fileName = Path.GetFileName(dialog.FileName);
-            var documentsFolder = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-                "TDNHCS",
-                "Attachments",
-                DateTime.Now.Year.ToString(),
-                DateTime.Now.Month.ToString("D2")
-            );
+            var originalFileName = Path.GetFileName(dialog.FileName);
+            var ext = Path.GetExtension(dialog.FileName);
 
-            Directory.CreateDirectory(documentsFolder);
-            var destinationPath = Path.Combine(documentsFolder, fileName);
+            // Lưu với tên GUID để ẩn nội dung, không lộ tên file gốc
+            var storedFileName = Guid.NewGuid().ToString("N") + ext;
+            var destinationPath = Path.Combine(AppPaths.AttachmentsFolder, storedFileName);
 
             try
             {
-                if (File.Exists(destinationPath))
-                {
-                    var result = MessageBox.Show(
-                        "File đã tồn tại. Bạn có muốn ghi đè?",
-                        "Xác nhận",
-                        MessageBoxButton.YesNo,
-                        MessageBoxImage.Question);
-
-                    if (result != MessageBoxResult.Yes)
-                        return;
-                }
-
                 File.Copy(dialog.FileName, destinationPath, true);
                 Document.FilePath = destinationPath;
-                
+                Document.OriginalFileName = originalFileName;
+
                 MessageBox.Show("Đính kèm file thành công!", "Thông báo",
                     MessageBoxButton.OK, MessageBoxImage.Information);
             }

@@ -56,7 +56,7 @@
                           SelectedValue="{Binding Document.CategoryId}"
                           DisplayMemberPath="Name"
                           SelectedValuePath="Id"
-                          FontSize="14" Padding="8" Margin="0,0,0,15"/>
+                          FontSize="14" Padding="8" Margin="0,0,0,15" SelectionChanged="cboCategory_SelectionChanged"/>
 
                 <!-- Ngày ban hành -->
                 <TextBlock Text="Ngày ban hành" FontWeight="SemiBold" Margin="0,0,0,5"/>

@@ -32,9 +32,14 @@ public class Document {
     public DateTime ReceivedDate { get; set; } = DateTime.Now;
     
     /// <summary>
-    /// Đường dẫn file đính kèm
+    /// Đường dẫn file đính kèm (lưu tên GUID trên disk)
     /// </summary>
     public string? FilePath { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Tên file gốc (để hiển thị cho người dùng)
+    /// </summary>
+    public string? OriginalFileName { get; set; }
 
     /// <summary>
     /// Loại văn bản

@@ -21,4 +21,9 @@ public partial class DocumentDetailWindow : Window
     {
 
     }
+
+    private void cboCategory_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+    {
+
+    }
 }

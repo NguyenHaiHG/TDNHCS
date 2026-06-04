@@ -5,7 +5,6 @@ using Microsoft.Win32;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Windows;
-using System.Windows.Input;
 using TDNHCS.Models;
 using TDNHCS.Services;
 using TDNHCS.Views;
@@ -20,6 +19,7 @@ public partial class MainViewModel : ObservableObject
     private readonly DocumentService _documentService;
     private readonly ExportService _exportService;
     private readonly PrintService _printService;
+    private readonly UserService _userService;
     private readonly IServiceProvider _serviceProvider;
 
     [ObservableProperty]
@@ -38,14 +38,16 @@ public partial class MainViewModel : ObservableObject
     private bool _isLoading;
 
     public MainViewModel(
-        DocumentService documentService, 
+        DocumentService documentService,
         ExportService exportService,
         PrintService printService,
+        UserService userService,
         IServiceProvider serviceProvider)
     {
         _documentService = documentService;
         _exportService = exportService;
         _printService = printService;
+        _userService = userService;
         _serviceProvider = serviceProvider;
     }
 
@@ -282,6 +284,17 @@ public partial class MainViewModel : ObservableObject
         }
 
         var window = new DocumentViewWindow(SelectedDocument);
+        window.ShowDialog();
+    }
+
+    /// <summary>
+    /// Đổi mật khẩu người dùng hiện tại
+    /// </summary>
+    [RelayCommand]
+    private void ChangePassword()
+    {
+        var viewModel = new ChangePasswordViewModel(_userService);
+        var window = new ChangePasswordWindow(viewModel);
         window.ShowDialog();
     }
 }
