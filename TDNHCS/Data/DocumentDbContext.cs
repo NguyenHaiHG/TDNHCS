@@ -30,6 +30,7 @@ public class DocumentDbContext : DbContext
             entity.HasKey(e => e.Id);
             entity.Property(e => e.DocumentNumber).IsRequired().HasMaxLength(50);
             entity.Property(e => e.Title).IsRequired().HasMaxLength(500);
+            entity.Property(e => e.Content);
             entity.Property(e => e.CreatedBy).IsRequired().HasMaxLength(100);
 
             entity.HasOne(e => e.Category)

@@ -32,6 +32,7 @@ public partial class DocumentViewWindow : Window
         txtSummary.Text = string.IsNullOrWhiteSpace(doc.Summary) ? "(Chưa có)" : doc.Summary;
         txtNotes.Text = string.IsNullOrWhiteSpace(doc.Notes) ? "(Chưa có)" : doc.Notes;
         txtFilePath.Text = string.IsNullOrWhiteSpace(doc.FilePath) ? "(Chưa đính kèm)" : doc.FilePath;
+        txtStorageLocation.Text = doc.StorageLocation;
     }
 
     // Chọn cách hiển thị phù hợp theo loại file

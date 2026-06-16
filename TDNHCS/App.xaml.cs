@@ -78,6 +78,19 @@ public partial class App : Application
 
         // Tạo database nếu chưa có
         await context.Database.EnsureCreatedAsync();
+        await EnsureDocumentContentColumnAsync(context);
+    }
+
+    private static async Task EnsureDocumentContentColumnAsync(DocumentDbContext context)
+    {
+        try
+        {
+            await context.Database.ExecuteSqlRawAsync("ALTER TABLE Documents ADD COLUMN Content TEXT");
+        }
+        catch
+        {
+            // Database mới đã có cột này, database cũ chỉ cần thêm một lần.
+        }
     }
 
     protected override void OnExit(ExitEventArgs e)

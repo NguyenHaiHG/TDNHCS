@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace TDNHCS.Models;
 
 /// <summary>
@@ -20,6 +22,11 @@ public class Document {
     /// Nội dung tóm tắt
     /// </summary>
     public string? Summary { get; set; }
+
+    /// <summary>
+    /// Nội dung đầy đủ của văn bản để lưu và tìm kiếm trong SQL
+    /// </summary>
+    public string? Content { get; set; }
     
     /// <summary>
     /// Ngày ban hành
@@ -61,6 +68,21 @@ public class Document {
     /// Ghi chú
     /// </summary>
     public string? Notes { get; set; }
+
+    [NotMapped]
+    public string StorageLocation
+    {
+        get
+        {
+            var databaseLocation = $"SQL: {AppPaths.DatabasePath}";
+            if (string.IsNullOrWhiteSpace(FilePath))
+            {
+                return $"{databaseLocation} | File đính kèm: chưa có";
+            }
+
+            return $"{databaseLocation} | File đính kèm: {FilePath}";
+        }
+    }
 }
 
 /// <summary>

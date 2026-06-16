@@ -42,11 +42,15 @@ public class DocumentService
     /// </summary>
     public async Task<List<Document>> SearchDocumentsAsync(string searchText)
     {
+        searchText = searchText.Trim();
+
         return await _context.Documents
             .Include(d => d.Category)
             .Where(d => d.Title.Contains(searchText) || 
                        d.DocumentNumber.Contains(searchText) ||
-                       (d.Summary != null && d.Summary.Contains(searchText)))
+                       (d.Summary != null && d.Summary.Contains(searchText)) ||
+                       (d.Content != null && d.Content.Contains(searchText)) ||
+                       (d.Notes != null && d.Notes.Contains(searchText)))
             .OrderByDescending(d => d.ReceivedDate)
             .ToListAsync();
     }

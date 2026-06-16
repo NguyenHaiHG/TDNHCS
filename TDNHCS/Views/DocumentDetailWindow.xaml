@@ -85,6 +85,16 @@
                          MinHeight="80"
                          FontSize="14" Padding="8" Margin="0,0,0,15"/>
 
+                <!-- Nội dung đầy đủ -->
+                <TextBlock Text="Nội dung văn bản" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                <TextBox x:Name="txtContent" 
+                         Text="{Binding Document.Content, UpdateSourceTrigger=PropertyChanged}"
+                         TextWrapping="Wrap"
+                         AcceptsReturn="True"
+                         VerticalScrollBarVisibility="Auto"
+                         MinHeight="140"
+                         FontSize="14" Padding="8" Margin="0,0,0,15"/>
+
                 <!-- Ghi chú -->
                 <TextBlock Text="Ghi chú" FontWeight="SemiBold" Margin="0,0,0,5"/>
                 <TextBox x:Name="txtNotes" 

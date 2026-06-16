@@ -36,4 +36,10 @@ public class UserService
         await _context.SaveChangesAsync();
         return true;
     }
+
+    public bool IsUsingDefaultAdminPassword(User? user)
+    {
+        return user?.Username.Equals("admin", StringComparison.OrdinalIgnoreCase) == true
+            && user.PasswordHash == DocumentDbContext.HashPassword("Admin@123");
+    }
 }

@@ -18,6 +18,10 @@ public partial class MainWindow : Window
         DataContext = _viewModel;
 
         // Load dữ liệu khi khởi động
-        Loaded += async (s, e) => await _viewModel.LoadDataCommand.ExecuteAsync(null);
+        Loaded += async (s, e) =>
+        {
+            await _viewModel.LoadDataCommand.ExecuteAsync(null);
+            _viewModel.PromptDefaultPasswordChange();
+        };
     }
 }

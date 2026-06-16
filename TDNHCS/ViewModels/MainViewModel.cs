@@ -29,13 +29,27 @@ public partial class MainViewModel : ObservableObject
     private ObservableCollection<Category> _categories = new();
 
     [ObservableProperty]
+    private ObservableCollection<Document> _chatbotResults = new();
+
+    [ObservableProperty]
     private Document? _selectedDocument;
 
     [ObservableProperty]
     private string _searchText = string.Empty;
 
     [ObservableProperty]
+    private string _chatbotSearchText = string.Empty;
+
+    [ObservableProperty]
+    private string _chatbotMessage = "Bạn muốn tôi tìm văn bản nào?";
+
+    [ObservableProperty]
+    private bool _isChatbotExpanded;
+
+    [ObservableProperty]
     private bool _isLoading;
+
+    private bool _hasPromptedDefaultPasswordChange;
 
     public MainViewModel(
         DocumentService documentService,
@@ -84,18 +98,77 @@ public partial class MainViewModel : ObservableObject
     [RelayCommand]
     private async Task SearchAsync()
     {
+        await SearchDocumentsAsync(SearchText);
+    }
+
+    [RelayCommand]
+    private async Task ChatbotSearchAsync()
+    {
+        if (string.IsNullOrWhiteSpace(ChatbotSearchText))
+        {
+            ChatbotMessage = "Bạn hãy nhập tiêu đề hoặc nội dung văn bản cần tìm nhé.";
+            ChatbotResults.Clear();
+            return;
+        }
+
+        SearchText = ChatbotSearchText.Trim();
+        await SearchDocumentsAsync(SearchText);
+        ChatbotResults = new ObservableCollection<Document>(Documents);
+        ChatbotMessage = Documents.Count == 0
+            ? "Tôi chưa tìm thấy văn bản phù hợp. Bạn thử nhập từ khóa khác nhé."
+            : $"Tôi tìm thấy {Documents.Count} văn bản liên quan. Bạn bấm vào văn bản bên dưới để đọc nhé.";
+    }
+
+    [RelayCommand]
+    private void ToggleChatbot()
+    {
+        IsChatbotExpanded = !IsChatbotExpanded;
+    }
+
+    [RelayCommand]
+    private void OpenChatbotDocument(Document? document)
+    {
+        if (document == null) return;
+
+        SelectedDocument = document;
+        var window = new DocumentViewWindow(document);
+        window.ShowDialog();
+    }
+
+    public void PromptDefaultPasswordChange()
+    {
+        if (_hasPromptedDefaultPasswordChange || !_userService.IsUsingDefaultAdminPassword(LoginViewModel.CurrentUser))
+        {
+            return;
+        }
+
+        _hasPromptedDefaultPasswordChange = true;
+        var result = MessageBox.Show(
+            "Bạn đang dùng mật khẩu admin mặc định (Admin@123). Bạn có muốn đổi mật khẩu ngay bây giờ không?",
+            "Đổi mật khẩu",
+            MessageBoxButton.YesNo,
+            MessageBoxImage.Information);
+
+        if (result == MessageBoxResult.Yes)
+        {
+            ChangePassword();
+        }
+    }
+
+    private async Task SearchDocumentsAsync(string searchText)
+    {
         try
         {
             IsLoading = true;
 
-            if (string.IsNullOrWhiteSpace(SearchText))
+            if (string.IsNullOrWhiteSpace(searchText))
             {
                 var docs = await _documentService.GetAllDocumentsAsync();
                 Documents = new ObservableCollection<Document>(docs);
             }
             else
             {
-                var docs = await _documentService.SearchDocumentsAsync(SearchText);
+                var docs = await _documentService.SearchDocumentsAsync(searchText);
                 Documents = new ObservableCollection<Document>(docs);
             }
         }
