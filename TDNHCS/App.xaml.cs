@@ -61,6 +61,7 @@ public partial class App : Application
         services.AddScoped<UserService>();
         services.AddSingleton<ExportService>();
         services.AddSingleton<PrintService>();
+        services.AddSingleton<GitHubUpdateService>();
 
         // ViewModels
         services.AddScoped<MainViewModel>();

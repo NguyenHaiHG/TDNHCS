@@ -5,17 +5,19 @@
 #define MyAppVersion "1.0.0"
 #define MyAppPublisher "TDNHCS"
 #define MyAppExeName "TDNHCS.exe"
-#define PublishDir "..\publish\win-x64-single"
+; Luôn lấy đường dẫn theo vị trí file .iss (tránh lỗi D:\publish\...)
+#define PublishDir AddBackslash(SourcePath) + "..\publish\win-x64-single"
+#define DistDir AddBackslash(SourcePath) + "..\dist"
 
 [Setup]
 AppId={{8F387E7A-8B80-4D59-9F2F-8B57A0F1E001}}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
 AppPublisher={#MyAppPublisher}
-DefaultDirName=D:\QLVBNHCS
+DefaultDirName=D:\QLVB
 DefaultGroupName={#MyAppName}
 DisableProgramGroupPage=yes
-OutputDir=..\dist
+OutputDir={#DistDir}
 OutputBaseFilename=TDNHCS_Setup
 UninstallDisplayIcon={app}\{#MyAppExeName}
 Compression=lzma2/ultra64

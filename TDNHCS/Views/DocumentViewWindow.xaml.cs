@@ -1,6 +1,7 @@
 using System.IO;
 using System.Windows;
 using TDNHCS.Models;
+using TDNHCS.Services;
 
 namespace TDNHCS.Views;
 
@@ -10,10 +11,9 @@ public partial class DocumentViewWindow : Window
     {
         InitializeComponent();
         LoadDocumentInfo(document);
-        LoadFilePreview(document.FilePath);
+        LoadPreview(document);
     }
 
-    // Hiển thị thông tin metadata của văn bản
     private void LoadDocumentInfo(Document doc)
     {
         txtDocumentNumber.Text = doc.DocumentNumber;
@@ -30,46 +30,64 @@ public partial class DocumentViewWindow : Window
         txtReceivedDate.Text = doc.ReceivedDate.ToString("dd/MM/yyyy");
         txtCreatedBy.Text = doc.CreatedBy;
         txtSummary.Text = string.IsNullOrWhiteSpace(doc.Summary) ? "(Chưa có)" : doc.Summary;
+        txtContent.Text = string.IsNullOrWhiteSpace(doc.Content) ? "(Chưa có)" : doc.Content;
         txtNotes.Text = string.IsNullOrWhiteSpace(doc.Notes) ? "(Chưa có)" : doc.Notes;
-        txtFilePath.Text = string.IsNullOrWhiteSpace(doc.FilePath) ? "(Chưa đính kèm)" : doc.FilePath;
-        txtStorageLocation.Text = doc.StorageLocation;
+        txtFilePath.Text = string.IsNullOrWhiteSpace(doc.DisplayFileName) ? "(Chưa đính kèm)" : doc.DisplayFileName;
+        txtStorageLocation.Text = doc.FileLocationDisplay;
     }
 
-    // Chọn cách hiển thị phù hợp theo loại file
-    private void LoadFilePreview(string? filePath)
+    private void LoadPreview(Document document)
     {
-        if (string.IsNullOrWhiteSpace(filePath) || !File.Exists(filePath))
+        HidePreviewPanels();
+
+        if (!string.IsNullOrWhiteSpace(document.FilePath) && File.Exists(document.FilePath))
+        {
+            var ext = Path.GetExtension(document.FilePath).ToLowerInvariant();
+            switch (ext)
+            {
+                case ".pdf":
+                    ShowPdfPreview(document.FilePath);
+                    return;
+
+                case ".txt":
+                    ShowTextPreview(document.FilePath);
+                    return;
+
+                case ".docx":
+                    ShowDocxPreview(document.FilePath);
+                    return;
+
+                case ".png":
+                case ".jpg":
+                case ".jpeg":
+                case ".bmp":
+                case ".gif":
+                    ShowImagePreview(document.FilePath);
+                    return;
+            }
+        }
+
+        if (!string.IsNullOrWhiteSpace(document.Content))
+        {
+            ShowDatabaseContentPreview(document.Content);
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(document.FilePath))
         {
             pnlNoFile.Visibility = Visibility.Visible;
             return;
         }
 
+        ShowNoPreviewMessage(Path.GetExtension(document.FilePath));
+    }
+
+    private void HidePreviewPanels()
+    {
+        webBrowser.Visibility = Visibility.Collapsed;
+        txtFileContent.Visibility = Visibility.Collapsed;
+        pnlNoPreview.Visibility = Visibility.Collapsed;
         pnlNoFile.Visibility = Visibility.Collapsed;
-
-        var ext = Path.GetExtension(filePath).ToLowerInvariant();
-
-        switch (ext)
-        {
-            case ".pdf":
-                ShowPdfPreview(filePath);
-                break;
-
-            case ".txt":
-                ShowTextPreview(filePath);
-                break;
-
-            case ".png":
-            case ".jpg":
-            case ".jpeg":
-            case ".bmp":
-            case ".gif":
-                ShowImagePreview(filePath);
-                break;
-
-            default:
-                ShowNoPreviewMessage(ext);
-                break;
-        }
     }
 
     private void ShowPdfPreview(string filePath)
@@ -86,11 +104,35 @@ public partial class DocumentViewWindow : Window
         txtFileContent.Text = File.ReadAllText(filePath);
     }
 
+    private void ShowDocxPreview(string filePath)
+    {
+        txtPreviewHeader.Text = "XEM NỘI DUNG FILE — WORD";
+        txtFileContent.Visibility = Visibility.Visible;
+
+        try
+        {
+            var text = DocxPreviewService.ExtractPlainText(filePath);
+            txtFileContent.Text = string.IsNullOrWhiteSpace(text)
+                ? "Không đọc được nội dung file Word."
+                : text;
+        }
+        catch (Exception ex)
+        {
+            txtFileContent.Text = $"Không thể đọc file Word: {ex.Message}";
+        }
+    }
+
+    private void ShowDatabaseContentPreview(string content)
+    {
+        txtPreviewHeader.Text = "XEM NỘI DUNG VĂN BẢN";
+        txtFileContent.Visibility = Visibility.Visible;
+        txtFileContent.Text = content;
+    }
+
     private void ShowImagePreview(string filePath)
     {
         txtPreviewHeader.Text = "XEM NỘI DUNG FILE — ẢNH";
         webBrowser.Visibility = Visibility.Visible;
-        // Dùng WebBrowser để hiển thị ảnh không cần thêm control
         webBrowser.Navigate(new Uri(filePath));
     }
 
@@ -98,6 +140,6 @@ public partial class DocumentViewWindow : Window
     {
         txtPreviewHeader.Text = "XEM NỘI DUNG FILE";
         pnlNoPreview.Visibility = Visibility.Visible;
-        txtNoPreviewMsg.Text = $"Không hỗ trợ xem trực tiếp file \"{ext.ToUpper()}\"\n\nVui lòng xem nội dung tóm tắt ở bên trái.";
+        txtNoPreviewMsg.Text = $"Không hỗ trợ xem trực tiếp file \"{ext.ToUpper()}\".\n\nVui lòng xem phần nội dung văn bản bên trái.";
     }
 }

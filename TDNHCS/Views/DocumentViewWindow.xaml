@@ -58,6 +58,11 @@
                     <TextBlock x:Name="txtSummary" FontSize="13" Foreground="#2C3E50"
                                TextWrapping="Wrap" Margin="0,0,0,12"/>
 
+                    <!-- Nội dung -->
+                    <TextBlock Text="Nội dung văn bản" FontWeight="SemiBold" Foreground="#7F8C8D" Margin="0,0,0,3"/>
+                    <TextBlock x:Name="txtContent" FontSize="13" Foreground="#2C3E50"
+                               TextWrapping="Wrap" Margin="0,0,0,12"/>
+
                     <!-- Ghi chú -->
                     <TextBlock Text="Ghi chú" FontWeight="SemiBold" Foreground="#7F8C8D" Margin="0,0,0,3"/>
                     <TextBlock x:Name="txtNotes" FontSize="13" Foreground="#2C3E50"

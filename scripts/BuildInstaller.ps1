@@ -20,6 +20,8 @@ $isccCandidates = @(
     "${env:ProgramFiles}\Inno Setup 6\ISCC.exe",
     "C:\Program Files (x86)\Inno Setup 6\ISCC.exe",
     "C:\Program Files\Inno Setup 6\ISCC.exe",
+    "C:\Program Files (x86)\Inno Setup 7\ISCC.exe",
+    "C:\Program Files\Inno Setup 7\ISCC.exe",
     "D:\Inno Setup 6\ISCC.exe"
 ) | Where-Object { -not [string]::IsNullOrWhiteSpace($_) }
 $iscc = $isccCandidates | Where-Object { Test-Path $_ } | Select-Object -First 1
@@ -52,7 +54,7 @@ $setupFile = Join-Path $distDir "TDNHCS_Setup.exe"
 if (Test-Path $setupFile) {
     Write-Host ""
     Write-Host "Hoàn tất: $setupFile"
-    Write-Host "Gửi file này sang máy khác, chạy để cài vào D:\QLVBNHCS và tạo shortcut ngoài Desktop."
+    Write-Host "Gửi file này sang máy khác, chạy để cài vào D:\QLVB và tạo shortcut ngoài Desktop."
 } else {
     throw "Không tìm thấy file installer sau khi build."
 }

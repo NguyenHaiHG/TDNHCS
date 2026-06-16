@@ -22,6 +22,12 @@ public partial class MainWindow : Window
         {
             await _viewModel.LoadDataCommand.ExecuteAsync(null);
             _viewModel.PromptDefaultPasswordChange();
+            await _viewModel.CheckForUpdatesSilentlyAsync();
         };
+    }
+
+    private void DataGrid_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+    {
+
     }
 }

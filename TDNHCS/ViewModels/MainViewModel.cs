@@ -5,6 +5,7 @@ using Microsoft.Win32;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Windows;
+using TDNHCS;
 using TDNHCS.Models;
 using TDNHCS.Services;
 using TDNHCS.Views;
@@ -20,6 +21,7 @@ public partial class MainViewModel : ObservableObject
     private readonly ExportService _exportService;
     private readonly PrintService _printService;
     private readonly UserService _userService;
+    private readonly GitHubUpdateService _updateService;
     private readonly IServiceProvider _serviceProvider;
 
     [ObservableProperty]
@@ -56,12 +58,14 @@ public partial class MainViewModel : ObservableObject
         ExportService exportService,
         PrintService printService,
         UserService userService,
+        GitHubUpdateService updateService,
         IServiceProvider serviceProvider)
     {
         _documentService = documentService;
         _exportService = exportService;
         _printService = printService;
         _userService = userService;
+        _updateService = updateService;
         _serviceProvider = serviceProvider;
     }
 
@@ -126,12 +130,18 @@ public partial class MainViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void OpenChatbotDocument(Document? document)
+    private async Task OpenChatbotDocumentAsync(Document? document)
     {
         if (document == null) return;
 
-        SelectedDocument = document;
-        var window = new DocumentViewWindow(document);
+        var fullDocument = await _documentService.GetDocumentByIdAsync(document.Id);
+        if (fullDocument == null) return;
+
+        SelectedDocument = fullDocument;
+        var window = new DocumentViewWindow(fullDocument)
+        {
+            Owner = Application.Current.MainWindow
+        };
         window.ShowDialog();
     }
 
@@ -347,7 +357,7 @@ public partial class MainViewModel : ObservableObject
     /// Xem nội dung văn bản trong app (không mở Word/PDF bên ngoài)
     /// </summary>
     [RelayCommand]
-    private void ViewDocument()
+    private async Task ViewDocumentAsync()
     {
         if (SelectedDocument == null)
         {
@@ -356,7 +366,14 @@ public partial class MainViewModel : ObservableObject
             return;
         }
 
-        var window = new DocumentViewWindow(SelectedDocument);
+        var fullDocument = await _documentService.GetDocumentByIdAsync(SelectedDocument.Id);
+        if (fullDocument == null) return;
+
+        SelectedDocument = fullDocument;
+        var window = new DocumentViewWindow(fullDocument)
+        {
+            Owner = Application.Current.MainWindow
+        };
         window.ShowDialog();
     }
 
@@ -367,7 +384,98 @@ public partial class MainViewModel : ObservableObject
     private void ChangePassword()
     {
         var viewModel = new ChangePasswordViewModel(_userService);
-        var window = new ChangePasswordWindow(viewModel);
+        var window = new ChangePasswordWindow(viewModel)
+        {
+            Owner = Application.Current.MainWindow
+        };
         window.ShowDialog();
+    }
+
+    [RelayCommand]
+    private async Task CheckForUpdatesAsync()
+    {
+        await CheckForUpdatesInternalAsync(showNoUpdateMessage: true);
+    }
+
+    public async Task CheckForUpdatesSilentlyAsync()
+    {
+        await CheckForUpdatesInternalAsync(showNoUpdateMessage: false);
+    }
+
+    private async Task CheckForUpdatesInternalAsync(bool showNoUpdateMessage)
+    {
+        if (!UpdateConfig.IsConfigured)
+        {
+            if (showNoUpdateMessage)
+            {
+                MessageBox.Show(
+                    "Chưa cấu hình GitHub update.\n\nHãy sửa file UpdateConfig.cs:\n- GitHubOwner\n- GitHubRepo",
+                    "Cập nhật",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Information);
+            }
+
+            return;
+        }
+
+        try
+        {
+            IsLoading = true;
+            var result = await _updateService.CheckForUpdateAsync();
+
+            if (!result.HasUpdate)
+            {
+                if (showNoUpdateMessage)
+                {
+                    MessageBox.Show(
+                        $"Bạn đang dùng phiên bản mới nhất ({result.CurrentVersion}).",
+                        "Cập nhật",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Information);
+                }
+
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(result.DownloadUrl))
+            {
+                MessageBox.Show(
+                    $"Có phiên bản mới {result.LatestVersion} nhưng chưa tìm thấy file {UpdateConfig.SetupAssetName} trong GitHub Release.",
+                    "Cập nhật",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
+                return;
+            }
+
+            var notes = string.IsNullOrWhiteSpace(result.ReleaseNotes)
+                ? "Không có ghi chú phiên bản."
+                : result.ReleaseNotes;
+
+            var confirm = MessageBox.Show(
+                $"Có phiên bản mới: {result.LatestVersion}\nPhiên bản hiện tại: {result.CurrentVersion}\n\n{notes}\n\nBạn có muốn tải và cài đặt bản cập nhật không?",
+                "Cập nhật từ GitHub",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Information);
+
+            if (confirm != MessageBoxResult.Yes)
+            {
+                return;
+            }
+
+            var installerPath = await _updateService.DownloadInstallerAsync(result.DownloadUrl);
+            _updateService.RunInstaller(installerPath);
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(
+                $"Không thể kiểm tra cập nhật: {ex.Message}",
+                "Cập nhật",
+                MessageBoxButton.OK,
+                MessageBoxImage.Error);
+        }
+        finally
+        {
+            IsLoading = false;
+        }
     }
 }

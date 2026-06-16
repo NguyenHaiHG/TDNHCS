@@ -8,7 +8,206 @@
         Title="Hệ thống Quản lý Văn bản" Height="600" Width="1000"
         WindowStartupLocation="CenterScreen">
     <Window.Resources>
-        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        <Style x:Key="PlaceholderTextBox" TargetType="TextBox">
+
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#CCCCCC"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="10,5"/>
+            <Setter Property="FontSize" Value="14"/>
+
+            <Setter Property="Template">
+                <Setter.Value>
+
+                    <ControlTemplate TargetType="TextBox">
+
+                        <Border
+                    CornerRadius="10"
+                    Background="{TemplateBinding Background}"
+                    BorderBrush="{TemplateBinding BorderBrush}"
+                    BorderThickness="{TemplateBinding BorderThickness}">
+
+                            <Grid>
+
+                                <!-- TEXT NHẬP -->
+                                <ScrollViewer
+                            x:Name="PART_ContentHost"
+                            Margin="10,0"
+                            VerticalAlignment="Center"/>
+
+                                <!-- PLACEHOLDER -->
+                                <TextBlock
+                            x:Name="Watermark"
+                            Text="{TemplateBinding Tag}"
+                            Foreground="Gray"
+                            Margin="15,0,0,0"
+                            VerticalAlignment="Center"
+                            IsHitTestVisible="False"/>
+
+                            </Grid>
+
+                        </Border>
+
+                        <ControlTemplate.Triggers>
+
+                            <!-- KHI CÓ TEXT -> ẨN PLACEHOLDER -->
+                            <Trigger Property="Text" Value="">
+                                <Setter TargetName="Watermark"
+                                Property="Visibility"
+                                Value="Visible"/>
+                            </Trigger>
+
+                            <Trigger Property="Text" Value="{x:Null}">
+                                <Setter TargetName="Watermark"
+                                Property="Visibility"
+                                Value="Visible"/>
+                            </Trigger>
+
+                            <!-- KHI FOCUS -> ẨN -->
+                            <Trigger Property="IsKeyboardFocused" Value="True">
+                                <Setter TargetName="Watermark"
+                                Property="Visibility"
+                                Value="Collapsed"/>
+                            </Trigger>
+
+                        </ControlTemplate.Triggers>
+
+                    </ControlTemplate>
+
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="RoundedComboBox" TargetType="ComboBox">
+
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#CCCCCC"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="10,5"/>
+            <Setter Property="FontSize" Value="14"/>
+
+            <Setter Property="Template">
+                <Setter.Value>
+
+                    <ControlTemplate TargetType="ComboBox">
+
+                        <Border
+                    CornerRadius="10"
+                    Background="{TemplateBinding Background}"
+                    BorderBrush="{TemplateBinding BorderBrush}"
+                    BorderThickness="{TemplateBinding BorderThickness}">
+
+                            <Grid>
+
+                                <ToggleButton
+                            Name="ToggleButton"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            Focusable="False"
+                            IsChecked="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}">
+
+                                    <Grid>
+
+                                        <ContentPresenter
+                                        Margin="10,0,30,0"
+                                         VerticalAlignment="Center"
+                                        HorizontalAlignment="Left"
+                                        Content="{TemplateBinding SelectionBoxItem}"/>          
+
+                                        <TextBlock
+                                    Text="▼"
+                                    HorizontalAlignment="Right"
+                                    Margin="0,0,10,0"
+                                    VerticalAlignment="Center"/>
+
+                                    </Grid>
+
+                                </ToggleButton>
+
+                                <Popup
+                            IsOpen="{TemplateBinding IsDropDownOpen}"
+                            Placement="Bottom">
+
+                                    <Border
+                                Background="White"
+                                BorderBrush="#CCCCCC"
+                                BorderThickness="1"
+                                CornerRadius="10">
+
+                                        <ScrollViewer>
+                                            <StackPanel IsItemsHost="True"/>
+                                        </ScrollViewer>
+
+                                    </Border>
+
+                                </Popup>
+
+                            </Grid>
+
+                        </Border>
+
+                    </ControlTemplate>
+
+                </Setter.Value>
+            </Setter>
+
+        </Style>    
+        <Style x:Key="RoundedTextBox" TargetType="TextBox">
+
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#CCCCCC"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="10,5"/>
+            <Setter Property="FontSize" Value="14"/>
+
+            <Setter Property="Template">
+                <Setter.Value>
+
+                    <ControlTemplate TargetType="TextBox">
+
+                        <Border
+                    CornerRadius="10"
+                    Background="{TemplateBinding Background}"
+                    BorderBrush="{TemplateBinding BorderBrush}"
+                    BorderThickness="{TemplateBinding BorderThickness}">
+
+                            <ScrollViewer x:Name="PART_ContentHost"/>
+
+                        </Border>
+
+                    </ControlTemplate>
+
+                </Setter.Value>
+            </Setter>
+
+        </Style>
+
+        <Style x:Key="RoundedButton" TargetType="Button">
+  
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="10">
+
+                            <ContentPresenter
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"/>
+
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+
+        </Style>
+
     </Window.Resources>
 
     <Grid Margin="10">
@@ -22,42 +221,42 @@
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
 
-        <!-- Tiêu đề -->
-        <TextBlock Grid.Row="0" 
+                    <!-- Tiêu đề -->
+                    <TextBlock Grid.Row="0" 
                    Text="HỆ THỐNG QUẢN LÝ VĂN BẢN"
                    FontSize="24" FontWeight="Bold"
                    HorizontalAlignment="Center"
                    Margin="0,0,0,20"
                    Foreground="#2C3E50"/>
 
-        <!-- Thanh tìm kiếm và nút chức năng -->
-        <Grid Grid.Row="1" Margin="0,0,0,10">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
-            </Grid.ColumnDefinitions>
+                    <!-- Thanh tìm kiếm và nút chức năng -->
+                    <Grid Grid.Row="1" Margin="0,0,0,10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
 
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
 
-            <!-- Dòng 1: Tìm kiếm và CRUD -->
-            <TextBox Grid.Row="0" Grid.Column="0" 
+                        <!-- Dòng 1: Tìm kiếm và CRUD -->
+                        <TextBox Grid.Row="0" Grid.Column="0" 
                      Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
                      FontSize="14"
                      Padding="8"
                      VerticalContentAlignment="Center"
                      Margin="0,0,10,5">
-                <TextBox.InputBindings>
-                    <KeyBinding Key="Enter" Command="{Binding SearchCommand}"/>
-                </TextBox.InputBindings>
-            </TextBox>
+                            <TextBox.InputBindings>
+                                <KeyBinding Key="Enter" Command="{Binding SearchCommand}"/>
+                            </TextBox.InputBindings>
+                        </TextBox>
 
-            <Button Grid.Row="0" Grid.Column="1" 
+                        <Button Grid.Row="0" Grid.Column="1" 
                     Content="🔍 Tìm kiếm"
                     Command="{Binding SearchCommand}"
                     Padding="15,8"
@@ -67,7 +266,7 @@
                     BorderThickness="0"
                     Cursor="Hand"/>
 
-            <Button Grid.Row="0" Grid.Column="2" 
+                        <Button Grid.Row="0" Grid.Column="2" 
                     Content="➕ Thêm"
                     Command="{Binding AddDocumentCommand}"
                     Padding="15,8"
@@ -77,7 +276,7 @@
                     BorderThickness="0"
                     Cursor="Hand"/>
 
-            <Button Grid.Row="0" Grid.Column="3" 
+                        <Button Grid.Row="0" Grid.Column="3" 
                     Content="✏️ Sửa"
                     Command="{Binding EditDocumentCommand}"
                     Padding="15,8"
@@ -87,7 +286,7 @@
                     BorderThickness="0"
                     Cursor="Hand"/>
 
-            <Button Grid.Row="0" Grid.Column="4" 
+                        <Button Grid.Row="0" Grid.Column="4" 
                     Content="🗑️ Xóa"
                     Command="{Binding DeleteDocumentCommand}"
                     Padding="15,8"
@@ -96,12 +295,12 @@
                     Foreground="White"
                     BorderThickness="0"
                     Cursor="Hand"/>
-            <!-- Dòng 2: Chức năng mở rộng -->
-            <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="5" 
+                        <!-- Dòng 2: Chức năng mở rộng -->
+                        <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="5" 
                         Orientation="Horizontal" 
                         HorizontalAlignment="Right">
 
-                <Button Content="📊 Thống kê"
+                            <Button Content="📊 Thống kê"
                         Command="{Binding ShowStatisticsCommand}"
                         Padding="15,8"
                         Margin="0,0,5,0"
@@ -110,7 +309,7 @@
                         BorderThickness="0"
                         Cursor="Hand"/>
 
-                <Button Content="📤 Xuất Excel"
+                            <Button Content="📤 Xuất Excel"
                         Command="{Binding ExportExcelCommand}"
                         Padding="15,8"
                         Margin="0,0,5,0"
@@ -119,15 +318,15 @@
                         BorderThickness="0"
                         Cursor="Hand"/>
 
-                <Button Content="🖨️ In"
+                            <Button Content="🖨️ In"
                         Command="{Binding PrintCommand}"
                         Padding="15,8"
                         Background="#34495E"
                         Foreground="White"
                         BorderThickness="0"
                         Cursor="Hand"/>
-                
-                <Button Content="⚙️ Xem"
+
+                            <Button Content="⚙️ Xem"
                         Command="{Binding ViewDocumentCommand}"
                         Padding="15,8"
                         Margin="5,0,0,0"
@@ -136,7 +335,7 @@
                         BorderThickness="0"
                         Cursor="Hand"/>
 
-                <Button Content="🔑 Đổi mật khẩu"
+                            <Button Content="🔑 Đổi mật khẩu"
                         Command="{Binding ChangePasswordCommand}"
                         Padding="15,8"
                         Margin="5,0,0,0"
@@ -144,11 +343,20 @@
                         Foreground="White"
                         BorderThickness="0"
                         Cursor="Hand"/>
-            </StackPanel>
-        </Grid>
 
-        <!-- DataGrid hiển thị danh sách văn bản -->
-        <DataGrid Grid.Row="2"
+                            <Button Content="🔄 Cập nhật"
+                        Command="{Binding CheckForUpdatesCommand}"
+                        Padding="15,8"
+                        Margin="5,0,0,0"
+                        Background="#1ABC9C"
+                        Foreground="White"
+                        BorderThickness="0"
+                        Cursor="Hand"/>
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- DataGrid hiển thị danh sách văn bản -->
+                    <DataGrid Grid.Row="2"
                   ItemsSource="{Binding Documents}"
                   SelectedItem="{Binding SelectedDocument}"
                   AutoGenerateColumns="False"
@@ -160,63 +368,63 @@
                   HeadersVisibility="Column"
                   FontSize="13">
 
-            <DataGrid.Columns>
-                <DataGridTextColumn Header="Số VB" 
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Số VB" 
                                     Binding="{Binding DocumentNumber}" 
                                     Width="120"/>
 
-                <DataGridTextColumn Header="Tiêu đề" 
+                            <DataGridTextColumn Header="Tiêu đề" 
                                     Binding="{Binding Title}" 
                                     Width="*"/>
 
-                <DataGridTextColumn Header="Loại VB" 
+                            <DataGridTextColumn Header="Loại VB" 
                                     Binding="{Binding Type}" 
                                     Width="100"/>
 
-                <DataGridTextColumn Header="Danh mục" 
+                            <DataGridTextColumn Header="Danh mục" 
                                     Binding="{Binding Category.Name}" 
                                     Width="120"/>
 
-                <DataGridTextColumn Header="Ngày ban hành" 
+                            <DataGridTextColumn Header="Ngày ban hành" 
                                     Binding="{Binding IssueDate, StringFormat=dd/MM/yyyy}" 
                                     Width="110"/>
 
-                <DataGridTextColumn Header="Ngày nhận" 
+                            <DataGridTextColumn Header="Ngày nhận" 
                                     Binding="{Binding ReceivedDate, StringFormat=dd/MM/yyyy}" 
                                     Width="110"/>
 
-                <DataGridTextColumn Header="Người tạo" 
+                            <DataGridTextColumn Header="Người tạo" 
                                     Binding="{Binding CreatedBy}" 
                                     Width="120"/>
-            </DataGrid.Columns>
-        </DataGrid>
+                        </DataGrid.Columns>
+                    </DataGrid>
 
-        <!-- Thanh trạng thái -->
-        <StatusBar Grid.Row="3" Margin="0,10,0,0">
-            <StatusBarItem>
-                <TextBlock>
+                    <!-- Thanh trạng thái -->
+                    <StatusBar Grid.Row="3" Margin="0,10,0,0">
+                        <StatusBarItem>
+                            <TextBlock>
                     <Run Text="Tổng số văn bản: "/>
                     <Run Text="{Binding Documents.Count, Mode=OneWay}" FontWeight="Bold"/>
-                </TextBlock>
-            </StatusBarItem>
-            <Separator/>
-            <StatusBarItem>
-                <TextBlock Text="{Binding SelectedDocument.Title, StringFormat='Đang chọn: {0}'}" 
+                            </TextBlock>
+                        </StatusBarItem>
+                        <Separator/>
+                        <StatusBarItem>
+                            <TextBlock Text="{Binding SelectedDocument.Title, StringFormat='Đang chọn: {0}'}" 
                            FontStyle="Italic"/>
-            </StatusBarItem>
-        </StatusBar>
+                        </StatusBarItem>
+                    </StatusBar>
 
-        <!-- Loading Overlay -->
-        <Grid Grid.RowSpan="4" 
+                    <!-- Loading Overlay -->
+                    <Grid Grid.RowSpan="4" 
               Background="#80000000" 
               Visibility="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}">
-            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                <TextBlock Text="⏳ Đang tải dữ liệu..." 
+                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <TextBlock Text="⏳ Đang tải dữ liệu..." 
                            FontSize="20" 
                            Foreground="White" 
                            FontWeight="Bold"/>
-            </StackPanel>
-        </Grid>
+                        </StackPanel>
+                    </Grid>
                 </Grid>
             </TabItem>
 
@@ -314,6 +522,10 @@
                                                FontSize="14"
                                                Foreground="#566573"
                                                Margin="0,0,0,6"/>
+                                    <TextBlock Text="• GitHub Releases để cập nhật từ xa"
+                                               FontSize="14"
+                                               Foreground="#566573"
+                                               Margin="0,0,0,6"/>
                                     <TextBlock Text="• Inno Setup để đóng gói bộ cài"
                                                FontSize="14"
                                                Foreground="#566573"/>
@@ -328,13 +540,84 @@
                                 BorderThickness="1"
                                 Padding="18"
                                 Margin="0,18,0,0">
-                            <TextBlock Text="Thư mục chương trình: D:\QLVBNHCS  |  Database: D:\SysCache_QLVB\data.db  |  File đính kèm: D:\SysCache_QLVB\store"
+                            <TextBlock Text="Thư mục chương trình: D:\QLVB  |  Database: D:\SysCache_QLVB\data.db  |  File đính kèm: D:\SysCache_QLVB\store"
                                        TextWrapping="Wrap"
                                        FontSize="14"
                                        Foreground="#7D6608"/>
                         </Border>
                     </Grid>
                 </ScrollViewer>
+            </TabItem>
+            <TabItem HorizontalAlignment="Center" Height="20" Header="Hợp đồng GQVL" VerticalAlignment="Top" Width="120" Margin="0,-1,0,0">
+                <Grid Background="#FFE5E5E5">
+                    <Border CornerRadius="10"
+        BorderBrush="#CCCCCC"
+        BorderThickness="1"
+        Margin="20,320,20,20"
+        Padding="5">
+
+                        <DataGrid
+        AutoGenerateColumns="False"
+        RowHeight="35"
+        FontSize="14"
+        GridLinesVisibility="Horizontal"
+        HeadersVisibility="Column"
+        Background="White"
+        BorderThickness="0">
+
+                            <DataGrid.Columns>
+
+                                <DataGridCheckBoxColumn
+                            Header="Chọn"
+                            Width="60"
+                            Binding="{Binding isSelected}"/>
+
+                                <DataGridTextColumn
+                Header="Tên khách hàng"
+                Width="200"
+                Binding="{Binding TenKhachHang}"/>
+
+                                <DataGridTextColumn
+                Header="Số hợp đồng"
+                Width="200"
+                Binding="{Binding SoHopDong}"/>
+
+                                <DataGridTextColumn
+                Header="Số Căn cước"
+                Width="150"
+                Binding="{Binding SoCanCuoc}"/>
+
+                                <DataGridTextColumn
+                Header="Số tiền vay"
+                Width="150"
+                Binding="{Binding SoTienVay}"/>
+
+                                <DataGridTextColumn
+                Header="Số điện thoại"
+                Width="150"
+                Binding="{Binding SoDienThoai}"/>
+
+                            </DataGrid.Columns>
+
+                        </DataGrid>
+
+                    </Border>
+                    <TextBox HorizontalAlignment="Left" Margin="97,65,0,0" TextWrapping="Wrap" Tag="Số hợp đồng" VerticalAlignment="Top" Width="120" Style="{StaticResource RoundedTextBox}"/>
+                    <ComboBox IsEditable="True" HorizontalAlignment="Left" Margin="95,101,0,0" VerticalAlignment="Top" Width="120" Style="{StaticResource RoundedComboBox}">
+                        <ComboBoxItem Content="10.000.000"/>
+                        <ComboBoxItem Content="20.000.000"/>
+                        <ComboBoxItem Content="50.000.000"/>
+                        <ComboBoxItem Content="100.000.000"/>
+                        <ComboBoxItem Content="200.000.000"/>
+                    </ComboBox>
+                    <Label Content="Số tiền vay:" HorizontalAlignment="Left" Margin="10,98,0,0" VerticalAlignment="Top"/>
+                    <TextBox HorizontalAlignment="Left" Margin="94,129,0,0" TextWrapping="Wrap" Tag="Số điện thoại" VerticalAlignment="Top" Width="120" Style="{StaticResource RoundedTextBox}"/>
+                    <Button Content="Tạo hợp đồng" Width="120" Height="20" HorizontalAlignment="Left" Margin="82,263,0,0" VerticalAlignment="Top" Style="{StaticResource RoundedButton}" Background ="Green"/>
+                    <Button Content="Xoá hợp đồng" Width="120" Height="20" HorizontalAlignment="Left" Margin="82,294,0,0" VerticalAlignment="Top" Style="{StaticResource RoundedButton}" Background ="Red"/>
+                    <Button Content="Lấy file excel mẫu" Width="120" Height="20" HorizontalAlignment="Left" Margin="232,262,0,0" VerticalAlignment="Top" Style="{StaticResource RoundedButton}" Background = "Aqua" Foreground="Black"/>
+                    <Button Content="Upload file excel mẫu" Width="120" Height="20" HorizontalAlignment="Left" Margin="232,292,0,0" VerticalAlignment="Top" Style="{StaticResource RoundedButton}" Background = "Chartreuse" Foreground="Black"/>
+
+                </Grid>
             </TabItem>
         </TabControl>
 
@@ -531,7 +814,7 @@
                                                        TextWrapping="Wrap"
                                                        MaxHeight="42"
                                                        Margin="0,4,0,0"/>
-                                            <TextBlock Text="{Binding StorageLocation}"
+                                            <TextBlock Text="{Binding FileLocationDisplay}"
                                                        Foreground="#2471A3"
                                                        FontSize="12"
                                                        TextWrapping="Wrap"
@@ -556,7 +839,7 @@
                                 <KeyBinding Key="Enter" Command="{Binding ChatbotSearchCommand}"/>
                             </TextBox.InputBindings>
                         </TextBox>
-                        <Button Content="Tìm trong SQL"
+                        <Button Content="Tìm văn bản"
                                 Command="{Binding ChatbotSearchCommand}"
                                 Margin="0,10,0,0"
                                 Padding="12,9"
