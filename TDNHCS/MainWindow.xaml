@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TDNHCS"
+        xmlns:views="clr-namespace:TDNHCS.Views"
         mc:Ignorable="d"
         Title="Hệ thống Quản lý Văn bản" Height="600" Width="1000"
         WindowStartupLocation="CenterScreen">
@@ -113,7 +114,7 @@
                                         Margin="10,0,30,0"
                                          VerticalAlignment="Center"
                                         HorizontalAlignment="Left"
-                                        Content="{TemplateBinding SelectionBoxItem}"/>          
+                                        Content="{TemplateBinding SelectionBoxItem}"/>
 
                                         <TextBlock
                                     Text="▼"
@@ -152,7 +153,7 @@
                 </Setter.Value>
             </Setter>
 
-        </Style>    
+        </Style>
         <Style x:Key="RoundedTextBox" TargetType="TextBox">
 
             <Setter Property="Foreground" Value="Black"/>
@@ -185,7 +186,7 @@
         </Style>
 
         <Style x:Key="RoundedButton" TargetType="Button">
-  
+
             <Setter Property="Foreground" Value="White"/>
             <Setter Property="BorderThickness" Value="0"/>
 
@@ -229,76 +230,49 @@
                    Margin="0,0,0,20"
                    Foreground="#2C3E50"/>
 
-                    <!-- Thanh tìm kiếm và nút chức năng -->
+                    <!-- Nút chức năng -->
                     <Grid Grid.Row="1" Margin="0,0,0,10">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-
                         <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
 
-                        <!-- Dòng 1: Tìm kiếm và CRUD -->
-                        <TextBox Grid.Row="0" Grid.Column="0" 
-                     Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
-                     FontSize="14"
-                     Padding="8"
-                     VerticalContentAlignment="Center"
-                     Margin="0,0,10,5">
-                            <TextBox.InputBindings>
-                                <KeyBinding Key="Enter" Command="{Binding SearchCommand}"/>
-                            </TextBox.InputBindings>
-                        </TextBox>
+                        <StackPanel Grid.Row="0" Orientation="Horizontal">
+                            <Button Content="➕ Thêm"
+                                    Command="{Binding AddDocumentCommand}"
+                                    Padding="15,8"
+                                    Margin="0,0,5,5"
+                                    Background="#27AE60"
+                                    Foreground="White"
+                                    BorderThickness="0"
+                                    Cursor="Hand" Style="{StaticResource RoundedButton}"
+                                    Width="85"/>
 
-                        <Button Grid.Row="0" Grid.Column="1" 
-                    Content="🔍 Tìm kiếm"
-                    Command="{Binding SearchCommand}"
-                    Padding="15,8"
-                    Margin="0,0,5,5"
-                    Background="#3498DB"
-                    Foreground="White"
-                    BorderThickness="0"
-                    Cursor="Hand"/>
+                            <Button Content="✏️ Sửa"
+                                    Command="{Binding EditDocumentCommand}"
+                                    Padding="15,8"
+                                    Margin="0,0,5,5"
+                                    Background="#F39C12"
+                                    Foreground="White"
+                                    BorderThickness="0"
+                                    Cursor="Hand" Style="{StaticResource RoundedButton}"
+                                    Width="85"/>
 
-                        <Button Grid.Row="0" Grid.Column="2" 
-                    Content="➕ Thêm"
-                    Command="{Binding AddDocumentCommand}"
-                    Padding="15,8"
-                    Margin="0,0,5,5"
-                    Background="#27AE60"
-                    Foreground="White"
-                    BorderThickness="0"
-                    Cursor="Hand"/>
+                            <Button Content="🗑️ Xóa"
+                                    Command="{Binding DeleteDocumentCommand}"
+                                    Padding="15,8"
+                                    Margin="0,0,0,5"
+                                    Background="#E74C3C"
+                                    Foreground="White"
+                                    BorderThickness="0"
+                                    Cursor="Hand" Style="{StaticResource RoundedButton}"
+                                    Width="85"/>
+                        </StackPanel>
 
-                        <Button Grid.Row="0" Grid.Column="3" 
-                    Content="✏️ Sửa"
-                    Command="{Binding EditDocumentCommand}"
-                    Padding="15,8"
-                    Margin="0,0,5,5"
-                    Background="#F39C12"
-                    Foreground="White"
-                    BorderThickness="0"
-                    Cursor="Hand"/>
-
-                        <Button Grid.Row="0" Grid.Column="4" 
-                    Content="🗑️ Xóa"
-                    Command="{Binding DeleteDocumentCommand}"
-                    Padding="15,8"
-                    Margin="0,0,0,5"
-                    Background="#E74C3C"
-                    Foreground="White"
-                    BorderThickness="0"
-                    Cursor="Hand"/>
-                        <!-- Dòng 2: Chức năng mở rộng -->
-                        <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="5" 
-                        Orientation="Horizontal" 
-                        HorizontalAlignment="Right">
+                        <StackPanel Grid.Row="1"
+                                    Orientation="Horizontal"
+                                    HorizontalAlignment="Right">
 
                             <Button Content="📊 Thống kê"
                         Command="{Binding ShowStatisticsCommand}"
@@ -307,7 +281,8 @@
                         Background="#9B59B6"
                         Foreground="White"
                         BorderThickness="0"
-                        Cursor="Hand"/>
+                        Cursor="Hand" Style="{StaticResource RoundedButton}"
+                                Width="85" Height="30"/>
 
                             <Button Content="📤 Xuất Excel"
                         Command="{Binding ExportExcelCommand}"
@@ -316,7 +291,7 @@
                         Background="#16A085"
                         Foreground="White"
                         BorderThickness="0"
-                        Cursor="Hand"/>
+                        Cursor="Hand" Style="{StaticResource RoundedButton}"/>
 
                             <Button Content="🖨️ In"
                         Command="{Binding PrintCommand}"
@@ -324,7 +299,7 @@
                         Background="#34495E"
                         Foreground="White"
                         BorderThickness="0"
-                        Cursor="Hand"/>
+                        Cursor="Hand" Style="{StaticResource RoundedButton}"/>
 
                             <Button Content="⚙️ Xem"
                         Command="{Binding ViewDocumentCommand}"
@@ -333,7 +308,7 @@
                         Background="#7F8C8D"
                         Foreground="White"
                         BorderThickness="0"
-                        Cursor="Hand"/>
+                        Cursor="Hand" Style="{StaticResource RoundedButton}"/>
 
                             <Button Content="🔑 Đổi mật khẩu"
                         Command="{Binding ChangePasswordCommand}"
@@ -342,7 +317,7 @@
                         Background="#E67E22"
                         Foreground="White"
                         BorderThickness="0"
-                        Cursor="Hand"/>
+                        Cursor="Hand" Style="{StaticResource RoundedButton}"/>
 
                             <Button Content="🔄 Cập nhật"
                         Command="{Binding CheckForUpdatesCommand}"
@@ -351,7 +326,28 @@
                         Background="#1ABC9C"
                         Foreground="White"
                         BorderThickness="0"
-                        Cursor="Hand"/>
+                        Cursor="Hand" Style="{StaticResource RoundedButton}"/>
+                        </StackPanel>
+
+                        <StackPanel Grid.Row="2"
+                                    Orientation="Horizontal"
+                                    Margin="0,0,0,5">
+                            <Button Content="💾 Sao lưu"
+                                    Command="{Binding BackupDataCommand}"
+                                    Padding="15,8"
+                                    Margin="0,0,5,0"
+                                    Background="#2980B9"
+                                    Foreground="White"
+                                    BorderThickness="0"
+                                    Cursor="Hand" Style="{StaticResource RoundedButton}"/>
+
+                            <Button Content="📥 Khôi phục"
+                                    Command="{Binding RestoreDataCommand}"
+                                    Padding="15,8"
+                                    Background="#8E44AD"
+                                    Foreground="White"
+                                    BorderThickness="0"
+                                    Cursor="Hand" Style="{StaticResource RoundedButton}"/>
                         </StackPanel>
                     </Grid>
 
@@ -415,16 +411,6 @@
                     </StatusBar>
 
                     <!-- Loading Overlay -->
-                    <Grid Grid.RowSpan="4" 
-              Background="#80000000" 
-              Visibility="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}">
-                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                            <TextBlock Text="⏳ Đang tải dữ liệu..." 
-                           FontSize="20" 
-                           Foreground="White" 
-                           FontWeight="Bold"/>
-                        </StackPanel>
-                    </Grid>
                 </Grid>
             </TabItem>
 
@@ -478,11 +464,11 @@
                                                FontWeight="Bold"
                                                Foreground="#2C3E50"
                                                Margin="0,0,0,12"/>
-                                    <TextBlock Text="Ứng dụng desktop Windows phục vụ quản lý văn bản: thêm, sửa, xóa, tìm kiếm theo tiêu đề và nội dung, xem file đính kèm, thống kê, in và xuất Excel."
+                                    <TextBlock Text="Ứng dụng desktop Windows phục vụ quản lý văn bản: thêm, sửa, xóa, tìm kiếm qua chatbot theo tiêu đề và nội dung, xem file đính kèm, thống kê, in và xuất Excel."
                                                TextWrapping="Wrap"
                                                FontSize="14"
                                                Foreground="#566573"/>
-                                    <TextBlock Text="Dữ liệu được lưu cục bộ trên ổ D để dễ triển khai trong môi trường nội bộ."
+                                    <TextBlock Text="Dữ liệu được lưu cục bộ trên ổ D. Dùng Sao lưu để xuất file ZIP mang sang máy khác, sau đó cài app và dùng Khôi phục."
                                                TextWrapping="Wrap"
                                                FontSize="14"
                                                Foreground="#566573"
@@ -522,7 +508,7 @@
                                                FontSize="14"
                                                Foreground="#566573"
                                                Margin="0,0,0,6"/>
-                                    <TextBlock Text="• GitHub Releases để cập nhật từ xa"
+                                    <TextBlock Text="• Cập nhật tự động qua mạng"
                                                FontSize="14"
                                                Foreground="#566573"
                                                Margin="0,0,0,6"/>
@@ -540,97 +526,32 @@
                                 BorderThickness="1"
                                 Padding="18"
                                 Margin="0,18,0,0">
-                            <TextBlock Text="Thư mục chương trình: D:\QLVB  |  Database: D:\SysCache_QLVB\data.db  |  File đính kèm: D:\SysCache_QLVB\store"
-                                       TextWrapping="Wrap"
-                                       FontSize="14"
-                                       Foreground="#7D6608"/>
+                            <StackPanel>
+                                <TextBlock Text="Thư mục chương trình: D:\QLVB  |  Dữ liệu: D:\SysCache_QLVB (tự tạo khi thêm văn bản đầu tiên)"
+                                           TextWrapping="Wrap"
+                                           FontSize="14"
+                                           Foreground="#7D6608"
+                                           Margin="0,0,0,8"/>
+                                <TextBlock Text="{Binding AppVersion, StringFormat=Phiên bản hiện tại: {0}}"
+                                           FontSize="14"
+                                           Foreground="#7D6608"/>
+                            </StackPanel>
                         </Border>
                     </Grid>
                 </ScrollViewer>
             </TabItem>
-            <TabItem HorizontalAlignment="Center" Height="20" Header="Hợp đồng GQVL" VerticalAlignment="Top" Width="120" Margin="0,-1,0,0">
-                <Grid Background="#FFE5E5E5">
-                    <Border CornerRadius="10"
-        BorderBrush="#CCCCCC"
-        BorderThickness="1"
-        Margin="20,320,20,20"
-        Padding="5">
-
-                        <DataGrid
-        AutoGenerateColumns="False"
-        RowHeight="35"
-        FontSize="14"
-        GridLinesVisibility="Horizontal"
-        HeadersVisibility="Column"
-        Background="White"
-        BorderThickness="0">
-
-                            <DataGrid.Columns>
-
-                                <DataGridCheckBoxColumn
-                            Header="Chọn"
-                            Width="60"
-                            Binding="{Binding isSelected}"/>
-
-                                <DataGridTextColumn
-                Header="Tên khách hàng"
-                Width="200"
-                Binding="{Binding TenKhachHang}"/>
-
-                                <DataGridTextColumn
-                Header="Số hợp đồng"
-                Width="200"
-                Binding="{Binding SoHopDong}"/>
-
-                                <DataGridTextColumn
-                Header="Số Căn cước"
-                Width="150"
-                Binding="{Binding SoCanCuoc}"/>
-
-                                <DataGridTextColumn
-                Header="Số tiền vay"
-                Width="150"
-                Binding="{Binding SoTienVay}"/>
-
-                                <DataGridTextColumn
-                Header="Số điện thoại"
-                Width="150"
-                Binding="{Binding SoDienThoai}"/>
-
-                            </DataGrid.Columns>
-
-                        </DataGrid>
-
-                    </Border>
-                    <TextBox HorizontalAlignment="Left" Margin="97,65,0,0" TextWrapping="Wrap" Tag="Số hợp đồng" VerticalAlignment="Top" Width="120" Style="{StaticResource RoundedTextBox}"/>
-                    <ComboBox IsEditable="True" HorizontalAlignment="Left" Margin="95,101,0,0" VerticalAlignment="Top" Width="120" Style="{StaticResource RoundedComboBox}">
-                        <ComboBoxItem Content="10.000.000"/>
-                        <ComboBoxItem Content="20.000.000"/>
-                        <ComboBoxItem Content="50.000.000"/>
-                        <ComboBoxItem Content="100.000.000"/>
-                        <ComboBoxItem Content="200.000.000"/>
-                    </ComboBox>
-                    <Label Content="Số tiền vay:" HorizontalAlignment="Left" Margin="10,98,0,0" VerticalAlignment="Top"/>
-                    <TextBox HorizontalAlignment="Left" Margin="94,129,0,0" TextWrapping="Wrap" Tag="Số điện thoại" VerticalAlignment="Top" Width="120" Style="{StaticResource RoundedTextBox}"/>
-                    <Button Content="Tạo hợp đồng" Width="120" Height="20" HorizontalAlignment="Left" Margin="82,263,0,0" VerticalAlignment="Top" Style="{StaticResource RoundedButton}" Background ="Green"/>
-                    <Button Content="Xoá hợp đồng" Width="120" Height="20" HorizontalAlignment="Left" Margin="82,294,0,0" VerticalAlignment="Top" Style="{StaticResource RoundedButton}" Background ="Red"/>
-                    <Button Content="Lấy file excel mẫu" Width="120" Height="20" HorizontalAlignment="Left" Margin="232,262,0,0" VerticalAlignment="Top" Style="{StaticResource RoundedButton}" Background = "Aqua" Foreground="Black"/>
-                    <Button Content="Upload file excel mẫu" Width="120" Height="20" HorizontalAlignment="Left" Margin="232,292,0,0" VerticalAlignment="Top" Style="{StaticResource RoundedButton}" Background = "Chartreuse" Foreground="Black"/>
-
-                </Grid>
-            </TabItem>
         </TabControl>
 
-        <!-- Chatbot nổi: thu gọn thành bong bóng, click để mở hội thoại -->
+        <!-- Chatbot nổi: robot AI tai Doraemon -->
         <Grid Grid.RowSpan="4"
               Panel.ZIndex="20"
               HorizontalAlignment="Right"
               VerticalAlignment="Bottom"
-              Margin="0,0,0,45">
+              Margin="0,0,16,45">
 
             <Button Command="{Binding ToggleChatbotCommand}"
-                    Width="96"
-                    Height="96"
+                    Width="108"
+                    Height="118"
                     Background="Transparent"
                     BorderThickness="0"
                     Cursor="Hand">
@@ -645,55 +566,35 @@
                     </Style>
                 </Button.Style>
                 <Grid>
-                    <Polygon Points="24,28 34,3 47,30"
-                             Fill="#FDE2F3"
-                             Stroke="#F48AC7"
-                             StrokeThickness="2"/>
-                    <Polygon Points="49,30 62,3 72,28"
-                             Fill="#FDE2F3"
-                             Stroke="#F48AC7"
-                             StrokeThickness="2"/>
-                    <Border Width="82"
-                            Height="68"
-                            CornerRadius="26"
-                            Background="#EAF8FF"
-                            BorderBrush="#77C9F2"
-                            BorderThickness="2"
-                            VerticalAlignment="Center">
-                        <Border.Effect>
-                            <DropShadowEffect Color="#8E44AD" BlurRadius="22" ShadowDepth="4" Opacity="0.35"/>
-                        </Border.Effect>
-                    </Border>
-                    <Ellipse Width="17" Height="19" Fill="#2C3E50" Margin="24,35,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                    <Ellipse Width="17" Height="19" Fill="#2C3E50" Margin="0,35,24,0" HorizontalAlignment="Right" VerticalAlignment="Top"/>
-                    <Ellipse Width="7" Height="7" Fill="White" Margin="30,39,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                    <Ellipse Width="7" Height="7" Fill="White" Margin="0,39,30,0" HorizontalAlignment="Right" VerticalAlignment="Top"/>
-                    <Path Data="M 38 57 Q 48 66 58 57"
-                          Stroke="#FF7DBF"
-                          StrokeThickness="3"
-                          StrokeStartLineCap="Round"
-                          StrokeEndLineCap="Round"
-                          Fill="Transparent"/>
-                    <Ellipse Width="10" Height="8" Fill="#FFB3D9" Margin="16,53,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                    <Ellipse Width="10" Height="8" Fill="#FFB3D9" Margin="0,53,16,0" HorizontalAlignment="Right" VerticalAlignment="Top"/>
-                    <Line X1="48" Y1="7" X2="48" Y2="17" Stroke="#77C9F2" StrokeThickness="3"/>
-                    <Ellipse Width="12" Height="12" Fill="#FFD166" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,0,0,0"/>
-                    <Border Background="#EAF6FF"
-                            CornerRadius="12"
-                            Padding="8,4"
+                    <Ellipse Width="104" Height="104"
+                             Fill="#D6EEFF" Opacity="0.55"
+                             VerticalAlignment="Bottom"/>
+                    <views:ChatbotRobotAvatar Width="100" Height="118"
+                                              VerticalAlignment="Bottom"/>
+                    <Border Background="White"
+                            CornerRadius="14"
+                            Padding="8,5"
                             HorizontalAlignment="Center"
                             VerticalAlignment="Top"
-                            Margin="0,-8,0,0">
-                        <TextBlock Text="Tìm văn bản?" FontSize="12" FontWeight="SemiBold" Foreground="#2C3E50"/>
+                            Margin="0,-4,0,0"
+                            BorderBrush="#B8D9F0"
+                            BorderThickness="1">
+                        <Border.Effect>
+                            <DropShadowEffect Color="#3498DB" BlurRadius="8" ShadowDepth="2" Opacity="0.25"/>
+                        </Border.Effect>
+                        <TextBlock Text="Tìm văn bản?"
+                                   FontSize="11"
+                                   FontWeight="SemiBold"
+                                   Foreground="#2471A3"/>
                     </Border>
                 </Grid>
             </Button>
 
             <Border Width="430"
                     MaxHeight="560"
-                    CornerRadius="26"
-                    Background="White"
-                    BorderBrush="#F5B7D8"
+                    CornerRadius="22"
+                    Background="#F4FAFF"
+                    BorderBrush="#B8D9F0"
                     BorderThickness="1">
                 <Border.Style>
                     <Style TargetType="Border">
@@ -717,9 +618,9 @@
                     </Grid.RowDefinitions>
 
                     <Border Grid.Row="0"
-                            CornerRadius="26,26,0,0"
+                            CornerRadius="22,22,0,0"
                             Padding="16"
-                            Background="#FFF0F8">
+                            Background="#E8F4FC">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
@@ -727,45 +628,20 @@
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
 
-                            <Grid Width="76" Height="76" Margin="0,0,12,0">
-                                <Polygon Points="18,29 29,4 42,31"
-                                         Fill="#FDE2F3"
-                                         Stroke="#F48AC7"
-                                         StrokeThickness="2"/>
-                                <Polygon Points="36,31 49,4 60,29"
-                                         Fill="#FDE2F3"
-                                         Stroke="#F48AC7"
-                                         StrokeThickness="2"/>
-                                <Border Width="68"
-                                        Height="58"
-                                        CornerRadius="22"
-                                        Background="#EAF8FF"
-                                        BorderBrush="#77C9F2"
-                                        BorderThickness="2"
-                                        VerticalAlignment="Center"/>
-                                <Ellipse Width="13" Height="15" Fill="#2C3E50" Margin="22,34,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                                <Ellipse Width="13" Height="15" Fill="#2C3E50" Margin="0,34,22,0" HorizontalAlignment="Right" VerticalAlignment="Top"/>
-                                <Ellipse Width="5" Height="5" Fill="White" Margin="27,37,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                                <Ellipse Width="5" Height="5" Fill="White" Margin="0,37,27,0" HorizontalAlignment="Right" VerticalAlignment="Top"/>
-                                <Path Data="M 31 53 Q 38 60 45 53"
-                                      Stroke="#FF7DBF"
-                                      StrokeThickness="3"
-                                      StrokeStartLineCap="Round"
-                                      StrokeEndLineCap="Round"
-                                      Fill="Transparent"/>
-                                <Line X1="38" Y1="7" X2="38" Y2="16" Stroke="#77C9F2" StrokeThickness="3"/>
-                                <Ellipse Width="11" Height="11" Fill="#FFD166" HorizontalAlignment="Center" VerticalAlignment="Top"/>
-                            </Grid>
+                            <views:ChatbotRobotAvatar Width="84" Height="98"
+                                                      Margin="0,0,12,0"/>
 
                             <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                <TextBlock Text="Bé trợ lý văn bản"
+                                <TextBlock Text="Trợ lý AI văn bản"
                                            FontSize="17"
                                            FontWeight="Bold"
-                                           Foreground="#2C3E50"/>
+                                           Foreground="#1A5276"/>
                                 <Border Background="White"
                                         CornerRadius="14"
                                         Padding="10"
-                                        Margin="0,6,0,0">
+                                        Margin="0,6,0,0"
+                                        BorderBrush="#D6EAF8"
+                                        BorderThickness="1">
                                     <TextBlock Text="{Binding ChatbotMessage}"
                                                TextWrapping="Wrap"
                                                Foreground="#566573"/>
@@ -777,8 +653,8 @@
                                     Command="{Binding ToggleChatbotCommand}"
                                     Padding="10,6"
                                     Margin="8,0,0,0"
-                                    Background="#FADBD8"
-                                    Foreground="#7B241C"
+                                    Background="#D6EAF8"
+                                    Foreground="#1A5276"
                                     BorderThickness="0"
                                     Cursor="Hand"/>
                         </Grid>
@@ -843,7 +719,7 @@
                                 Command="{Binding ChatbotSearchCommand}"
                                 Margin="0,10,0,0"
                                 Padding="12,9"
-                                Background="#FF8CCB"
+                                Background="#3498DB"
                                 Foreground="White"
                                 BorderThickness="0"
                                 Cursor="Hand"/>

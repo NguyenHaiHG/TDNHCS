@@ -28,10 +28,6 @@ ArchitecturesInstallIn64BitMode=x64
 PrivilegesRequired=lowest
 SetupLogging=yes
 
-[Dirs]
-Name: "D:\SysCache_QLVB"; Attribs: hidden system
-Name: "D:\SysCache_QLVB\store"; Attribs: hidden system
-
 [Files]
 Source: "{#PublishDir}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 
@@ -44,14 +40,38 @@ Name: "{group}\Gỡ cài đặt QLVBNHCS"; Filename: "{uninstallexe}"
 Filename: "{app}\{#MyAppExeName}"; Description: "Mở QLVBNHCS"; Flags: nowait postinstall skipifsilent
 
 [Code]
+var
+  IsAutoUpdate: Boolean;
+  SetupSucceeded: Boolean;
+
 function InitializeSetup(): Boolean;
 begin
+  IsAutoUpdate := ExpandConstant('{param:UPDATE|}') = '1';
+  SetupSucceeded := False;
+
   if not DirExists('D:\') then
   begin
-    MsgBox('Máy này không có ổ D:. Bộ cài cần ổ D: để lưu chương trình và dữ liệu.', mbError, MB_OK);
+    MsgBox('Máy này không có ổ D:. Bộ cài cần ổ D: để cài chương trình. Dữ liệu sẽ tự tạo khi bạn thêm văn bản đầu tiên.', mbError, MB_OK);
     Result := False;
     Exit;
   end;
 
   Result := True;
+end;
+
+procedure CurStepChanged(CurStep: TSetupStep);
+begin
+  if CurStep = ssPostInstall then
+    SetupSucceeded := True;
+end;
+
+procedure DeinitializeSetup();
+begin
+  if WizardSilent() and IsAutoUpdate and SetupSucceeded then
+  begin
+    MsgBox(
+      'Đã cập nhật thành công.' + #13#10 + #13#10 +
+      'Bạn hãy mở lại ứng dụng QLVBNHCS.',
+      mbInformation, MB_OK);
+  end;
 end;

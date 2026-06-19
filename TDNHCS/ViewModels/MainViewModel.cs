@@ -22,6 +22,7 @@ public partial class MainViewModel : ObservableObject
     private readonly PrintService _printService;
     private readonly UserService _userService;
     private readonly GitHubUpdateService _updateService;
+    private readonly BackupRestoreService _backupRestoreService;
     private readonly IServiceProvider _serviceProvider;
 
     [ObservableProperty]
@@ -37,9 +38,6 @@ public partial class MainViewModel : ObservableObject
     private Document? _selectedDocument;
 
     [ObservableProperty]
-    private string _searchText = string.Empty;
-
-    [ObservableProperty]
     private string _chatbotSearchText = string.Empty;
 
     [ObservableProperty]
@@ -51,6 +49,8 @@ public partial class MainViewModel : ObservableObject
     [ObservableProperty]
     private bool _isLoading;
 
+    public string AppVersion => _updateService.CurrentVersion;
+
     private bool _hasPromptedDefaultPasswordChange;
 
     public MainViewModel(
@@ -59,6 +59,7 @@ public partial class MainViewModel : ObservableObject
         PrintService printService,
         UserService userService,
         GitHubUpdateService updateService,
+        BackupRestoreService backupRestoreService,
         IServiceProvider serviceProvider)
     {
         _documentService = documentService;
@@ -66,6 +67,7 @@ public partial class MainViewModel : ObservableObject
         _printService = printService;
         _userService = userService;
         _updateService = updateService;
+        _backupRestoreService = backupRestoreService;
         _serviceProvider = serviceProvider;
     }
 
@@ -78,6 +80,11 @@ public partial class MainViewModel : ObservableObject
         try
         {
             IsLoading = true;
+
+            if (AppPaths.IsInitialized)
+            {
+                await _documentService.MigrateStoredPathsAsync();
+            }
 
             var docs = await _documentService.GetAllDocumentsAsync();
             Documents = new ObservableCollection<Document>(docs);
@@ -96,15 +103,6 @@ public partial class MainViewModel : ObservableObject
         }
     }
 
-    /// <summary>
-    /// Tìm kiếm văn bản
-    /// </summary>
-    [RelayCommand]
-    private async Task SearchAsync()
-    {
-        await SearchDocumentsAsync(SearchText);
-    }
-
     [RelayCommand]
     private async Task ChatbotSearchAsync()
     {
@@ -115,12 +113,32 @@ public partial class MainViewModel : ObservableObject
             return;
         }
 
-        SearchText = ChatbotSearchText.Trim();
-        await SearchDocumentsAsync(SearchText);
-        ChatbotResults = new ObservableCollection<Document>(Documents);
-        ChatbotMessage = Documents.Count == 0
-            ? "Tôi chưa tìm thấy văn bản phù hợp. Bạn thử nhập từ khóa khác nhé."
-            : $"Tôi tìm thấy {Documents.Count} văn bản liên quan. Bạn bấm vào văn bản bên dưới để đọc nhé.";
+        try
+        {
+            IsLoading = true;
+
+            if (!AppPaths.IsInitialized)
+            {
+                ChatbotResults.Clear();
+                ChatbotMessage = "Chưa có dữ liệu. Bạn hãy thêm văn bản đầu tiên trước khi tìm kiếm nhé.";
+                return;
+            }
+
+            var docs = await _documentService.SearchDocumentsAsync(ChatbotSearchText.Trim());
+            ChatbotResults = new ObservableCollection<Document>(docs);
+            ChatbotMessage = docs.Count == 0
+                ? "Tôi chưa tìm thấy văn bản phù hợp. Bạn thử nhập từ khóa khác nhé."
+                : $"Tôi tìm thấy {docs.Count} văn bản liên quan. Bạn bấm vào văn bản bên dưới để đọc nhé.";
+        }
+        catch (Exception ex)
+        {
+            ChatbotMessage = $"Không tìm được văn bản: {ex.Message}";
+            ChatbotResults.Clear();
+        }
+        finally
+        {
+            IsLoading = false;
+        }
     }
 
     [RelayCommand]
@@ -147,7 +165,9 @@ public partial class MainViewModel : ObservableObject
 
     public void PromptDefaultPasswordChange()
     {
-        if (_hasPromptedDefaultPasswordChange || !_userService.IsUsingDefaultAdminPassword(LoginViewModel.CurrentUser))
+        if (_hasPromptedDefaultPasswordChange
+            || !_userService.CanChangePassword
+            || !_userService.IsUsingDefaultAdminPassword(LoginViewModel.CurrentUser))
         {
             return;
         }
@@ -162,34 +182,6 @@ public partial class MainViewModel : ObservableObject
         if (result == MessageBoxResult.Yes)
         {
             ChangePassword();
-        }
-    }
-
-    private async Task SearchDocumentsAsync(string searchText)
-    {
-        try
-        {
-            IsLoading = true;
-
-            if (string.IsNullOrWhiteSpace(searchText))
-            {
-                var docs = await _documentService.GetAllDocumentsAsync();
-                Documents = new ObservableCollection<Document>(docs);
-            }
-            else
-            {
-                var docs = await _documentService.SearchDocumentsAsync(searchText);
-                Documents = new ObservableCollection<Document>(docs);
-            }
-        }
-        catch (Exception ex)
-        {
-            MessageBox.Show($"Lỗi khi tìm kiếm: {ex.Message}", "Lỗi",
-                MessageBoxButton.OK, MessageBoxImage.Error);
-        }
-        finally
-        {
-            IsLoading = false;
         }
     }
 
@@ -377,12 +369,135 @@ public partial class MainViewModel : ObservableObject
         window.ShowDialog();
     }
 
+    [RelayCommand]
+    private async Task BackupDataAsync()
+    {
+        if (!AppPaths.IsInitialized)
+        {
+            MessageBox.Show(
+                "Chưa có dữ liệu để sao lưu.\n\nHãy thêm văn bản đầu tiên trước.",
+                "Sao lưu dữ liệu",
+                MessageBoxButton.OK,
+                MessageBoxImage.Information);
+            return;
+        }
+
+        var dialog = new SaveFileDialog
+        {
+            Title = "Lưu file sao lưu",
+            Filter = "File sao lưu (*.zip)|*.zip",
+            FileName = $"QLVB_SaoLuu_{DateTime.Now:yyyyMMdd_HHmmss}.zip",
+            DefaultExt = ".zip"
+        };
+
+        if (dialog.ShowDialog() != true)
+        {
+            return;
+        }
+
+        try
+        {
+            IsLoading = true;
+            await _backupRestoreService.BackupAsync(dialog.FileName);
+            MessageBox.Show(
+                $"Sao lưu thành công!\n\nFile: {dialog.FileName}\n\nBạn có thể copy file này sang máy khác, cài app và dùng Khôi phục để mở lại dữ liệu.",
+                "Sao lưu dữ liệu",
+                MessageBoxButton.OK,
+                MessageBoxImage.Information);
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Không thể sao lưu: {ex.Message}", "Lỗi",
+                MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    [RelayCommand]
+    private async Task RestoreDataAsync()
+    {
+        var dialog = new OpenFileDialog
+        {
+            Title = "Chọn file sao lưu",
+            Filter = "File sao lưu (*.zip)|*.zip"
+        };
+
+        if (dialog.ShowDialog() != true)
+        {
+            return;
+        }
+
+        var confirm = MessageBox.Show(
+            "Khôi phục sẽ ghi đè toàn bộ dữ liệu hiện tại bằng dữ liệu trong file sao lưu.\n\nBạn có chắc muốn tiếp tục?",
+            "Khôi phục dữ liệu",
+            MessageBoxButton.YesNo,
+            MessageBoxImage.Warning);
+
+        if (confirm != MessageBoxResult.Yes)
+        {
+            return;
+        }
+
+        try
+        {
+            IsLoading = true;
+            await _backupRestoreService.RestoreAsync(dialog.FileName);
+
+            MessageBox.Show(
+                "Khôi phục thành công!\n\nỨng dụng sẽ mở lại để tải dữ liệu mới.",
+                "Khôi phục dữ liệu",
+                MessageBoxButton.OK,
+                MessageBoxImage.Information);
+
+            RestartApplication();
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Không thể khôi phục: {ex.Message}", "Lỗi",
+                MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    private static void RestartApplication()
+    {
+        var exePath = Environment.ProcessPath
+            ?? Process.GetCurrentProcess().MainModule?.FileName;
+
+        if (!string.IsNullOrWhiteSpace(exePath))
+        {
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = exePath,
+                UseShellExecute = true
+            });
+        }
+
+        Application.Current.Shutdown();
+    }
+
     /// <summary>
     /// Đổi mật khẩu người dùng hiện tại
     /// </summary>
     [RelayCommand]
     private void ChangePassword()
     {
+        if (!_userService.CanChangePassword)
+        {
+            MessageBox.Show(
+                "Hệ thống chưa khởi tạo lưu trữ.\n\nVui lòng thêm văn bản đầu tiên trước khi đổi mật khẩu.",
+                "Đổi mật khẩu",
+                MessageBoxButton.OK,
+                MessageBoxImage.Information);
+            return;
+        }
+
         var viewModel = new ChangePasswordViewModel(_userService);
         var window = new ChangePasswordWindow(viewModel)
         {
@@ -406,15 +521,6 @@ public partial class MainViewModel : ObservableObject
     {
         if (!UpdateConfig.IsConfigured)
         {
-            if (showNoUpdateMessage)
-            {
-                MessageBox.Show(
-                    "Chưa cấu hình GitHub update.\n\nHãy sửa file UpdateConfig.cs:\n- GitHubOwner\n- GitHubRepo",
-                    "Cập nhật",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Information);
-            }
-
             return;
         }
 
@@ -422,6 +528,20 @@ public partial class MainViewModel : ObservableObject
         {
             IsLoading = true;
             var result = await _updateService.CheckForUpdateAsync();
+
+            if (!result.ReleaseAvailable)
+            {
+                if (showNoUpdateMessage)
+                {
+                    MessageBox.Show(
+                        "Chưa có bản cập nhật trên máy chủ.\n\nVui lòng thử lại sau hoặc liên hệ quản trị viên.",
+                        "Cập nhật phần mềm",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Information);
+                }
+
+                return;
+            }
 
             if (!result.HasUpdate)
             {
@@ -440,10 +560,11 @@ public partial class MainViewModel : ObservableObject
             if (string.IsNullOrWhiteSpace(result.DownloadUrl))
             {
                 MessageBox.Show(
-                    $"Có phiên bản mới {result.LatestVersion} nhưng chưa tìm thấy file {UpdateConfig.SetupAssetName} trong GitHub Release.",
+                    $"Có phiên bản mới {result.LatestVersion} nhưng chưa tải được gói cập nhật.\n\nPhần mềm sẽ thoát.",
                     "Cập nhật",
                     MessageBoxButton.OK,
                     MessageBoxImage.Warning);
+                Application.Current.Shutdown();
                 return;
             }
 
@@ -452,26 +573,48 @@ public partial class MainViewModel : ObservableObject
                 : result.ReleaseNotes;
 
             var confirm = MessageBox.Show(
-                $"Có phiên bản mới: {result.LatestVersion}\nPhiên bản hiện tại: {result.CurrentVersion}\n\n{notes}\n\nBạn có muốn tải và cài đặt bản cập nhật không?",
-                "Cập nhật từ GitHub",
+                $"Có phiên bản mới: {result.LatestVersion}\nPhiên bản hiện tại: {result.CurrentVersion}\n\n{notes}\n\nBạn cần cập nhật để tiếp tục sử dụng.\nChọn Có để tải và cài đặt.\nChọn Không sẽ thoát phần mềm.",
+                "Cập nhật phần mềm",
                 MessageBoxButton.YesNo,
-                MessageBoxImage.Information);
+                MessageBoxImage.Warning);
 
             if (confirm != MessageBoxResult.Yes)
             {
+                Application.Current.Shutdown();
                 return;
             }
 
-            var installerPath = await _updateService.DownloadInstallerAsync(result.DownloadUrl);
-            _updateService.RunInstaller(installerPath);
+            IsLoading = false;
+
+            var progressWindow = new UpdateProgressWindow
+            {
+                Owner = Application.Current.MainWindow
+            };
+            progressWindow.Show();
+
+            try
+            {
+                var progress = new Progress<int>(percent => progressWindow.UpdateProgress(percent));
+                var installerPath = await _updateService.DownloadInstallerAsync(result.DownloadUrl, progress);
+                progressWindow.Close();
+                _updateService.RunInstaller(installerPath);
+            }
+            catch
+            {
+                progressWindow.Close();
+                throw;
+            }
         }
         catch (Exception ex)
         {
-            MessageBox.Show(
-                $"Không thể kiểm tra cập nhật: {ex.Message}",
-                "Cập nhật",
-                MessageBoxButton.OK,
-                MessageBoxImage.Error);
+            if (showNoUpdateMessage)
+            {
+                MessageBox.Show(
+                    $"Không thể kiểm tra cập nhật: {ex.Message}",
+                    "Cập nhật phần mềm",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+            }
         }
         finally
         {

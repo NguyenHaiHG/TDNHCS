@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 using TDNHCS.Models;
@@ -17,7 +16,6 @@ public class DocumentDbContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        AppPaths.EnsureDirectories();
         optionsBuilder.UseSqlite($"Data Source={AppPaths.DatabasePath}");
     }
 

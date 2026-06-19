@@ -40,21 +40,21 @@ public partial class DocumentViewWindow : Window
     {
         HidePreviewPanels();
 
-        if (!string.IsNullOrWhiteSpace(document.FilePath) && File.Exists(document.FilePath))
+        if (!string.IsNullOrWhiteSpace(document.ResolvedFilePath) && File.Exists(document.ResolvedFilePath))
         {
-            var ext = Path.GetExtension(document.FilePath).ToLowerInvariant();
+            var ext = Path.GetExtension(document.ResolvedFilePath).ToLowerInvariant();
             switch (ext)
             {
                 case ".pdf":
-                    ShowPdfPreview(document.FilePath);
+                    ShowPdfPreview(document.ResolvedFilePath);
                     return;
 
                 case ".txt":
-                    ShowTextPreview(document.FilePath);
+                    ShowTextPreview(document.ResolvedFilePath);
                     return;
 
                 case ".docx":
-                    ShowDocxPreview(document.FilePath);
+                    ShowDocxPreview(document.ResolvedFilePath);
                     return;
 
                 case ".png":
@@ -62,7 +62,7 @@ public partial class DocumentViewWindow : Window
                 case ".jpeg":
                 case ".bmp":
                 case ".gif":
-                    ShowImagePreview(document.FilePath);
+                    ShowImagePreview(document.ResolvedFilePath);
                     return;
             }
         }
@@ -79,7 +79,7 @@ public partial class DocumentViewWindow : Window
             return;
         }
 
-        ShowNoPreviewMessage(Path.GetExtension(document.FilePath));
+        ShowNoPreviewMessage(Path.GetExtension(document.ResolvedFilePath ?? document.FilePath));
     }
 
     private void HidePreviewPanels()

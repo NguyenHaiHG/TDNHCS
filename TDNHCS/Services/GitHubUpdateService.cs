@@ -46,11 +46,22 @@ public class GitHubUpdateService
 
         var apiUrl = $"https://api.github.com/repos/{UpdateConfig.GitHubOwner}/{UpdateConfig.GitHubRepo}/releases/latest";
         using var response = await HttpClient.GetAsync(apiUrl, cancellationToken);
+
+        if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+        {
+            return new UpdateCheckResult
+            {
+                HasUpdate = false,
+                ReleaseAvailable = false,
+                CurrentVersion = currentVersion
+            };
+        }
+
         response.EnsureSuccessStatusCode();
 
         await using var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
         var release = await JsonSerializer.DeserializeAsync<GitHubRelease>(stream, cancellationToken: cancellationToken)
-            ?? throw new InvalidOperationException("Không đọc được dữ liệu release từ GitHub.");
+            ?? throw new InvalidOperationException("Không đọc được thông tin phiên bản mới.");
 
         var latestVersion = ParseVersion(release.TagName);
         var installedVersion = ParseVersion(currentVersion);
@@ -60,19 +71,35 @@ public class GitHubUpdateService
         return new UpdateCheckResult
         {
             HasUpdate = latestVersion > installedVersion,
+            ReleaseAvailable = true,
             LatestVersion = latestVersion.ToString(3),
             CurrentVersion = currentVersion,
             ReleaseNotes = release.Body,
-            DownloadUrl = asset?.BrowserDownloadUrl,
-            ReleasePageUrl = release.HtmlUrl
+            DownloadUrl = asset?.BrowserDownloadUrl
         };
     }
 
     public async Task<string> DownloadInstallerAsync(string downloadUrl, IProgress<int>? progress = null, CancellationToken cancellationToken = default)
     {
         var destination = Path.Combine(Path.GetTempPath(), UpdateConfig.SetupAssetName);
+        if (File.Exists(destination))
+        {
+            File.Delete(destination);
+        }
 
-        using var response = await HttpClient.GetAsync(downloadUrl, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+        using var downloadClient = new HttpClient
+        {
+            Timeout = TimeSpan.FromMinutes(15)
+        };
+        downloadClient.DefaultRequestHeaders.UserAgent.ParseAdd("QLVBNHCS-Updater/1.0");
+
+        using var response = await downloadClient.GetAsync(downloadUrl, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+
+        if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+        {
+            throw new InvalidOperationException("Không tìm thấy file cập nhật.");
+        }
+
         response.EnsureSuccessStatusCode();
 
         await using var input = await response.Content.ReadAsStreamAsync(cancellationToken);
@@ -82,6 +109,9 @@ public class GitHubUpdateService
         var buffer = new byte[81920];
         long downloadedBytes = 0;
         int read;
+        var lastReported = -1;
+
+        progress?.Report(0);
 
         while ((read = await input.ReadAsync(buffer, cancellationToken)) > 0)
         {
@@ -91,10 +121,15 @@ public class GitHubUpdateService
             if (totalBytes > 0)
             {
                 var percent = (int)(downloadedBytes * 100 / totalBytes);
-                progress?.Report(percent);
+                if (percent != lastReported)
+                {
+                    lastReported = percent;
+                    progress?.Report(percent);
+                }
             }
         }
 
+        progress?.Report(100);
         return destination;
     }
 
@@ -103,7 +138,7 @@ public class GitHubUpdateService
         Process.Start(new ProcessStartInfo
         {
             FileName = installerPath,
-            Arguments = "/SILENT /CLOSEAPPLICATIONS",
+            Arguments = "/SILENT /CLOSEAPPLICATIONS /UPDATE=1",
             UseShellExecute = true
         });
 

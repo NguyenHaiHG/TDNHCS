@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.IO;
+using TDNHCS;
 
 namespace TDNHCS.Models;
 
@@ -71,10 +72,14 @@ public class Document {
     public string? Notes { get; set; }
 
     [NotMapped]
+    public string? ResolvedFilePath =>
+        string.IsNullOrWhiteSpace(FilePath) ? FilePath : AppPaths.ResolveStoredPath(FilePath);
+
+    [NotMapped]
     public string DisplayFileName =>
         !string.IsNullOrWhiteSpace(OriginalFileName)
             ? OriginalFileName
-            : Path.GetFileName(FilePath ?? string.Empty);
+            : Path.GetFileName(ResolvedFilePath ?? FilePath ?? string.Empty);
 
     [NotMapped]
     public string FileLocationDisplay
@@ -86,7 +91,7 @@ public class Document {
                 return "Chưa có file đính kèm";
             }
 
-            return $"{FilePath} | {DisplayFileName}";
+            return $"{ResolvedFilePath} | {DisplayFileName}";
         }
     }
 }

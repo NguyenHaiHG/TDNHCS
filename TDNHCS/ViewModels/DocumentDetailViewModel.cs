@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Windows;
+using TDNHCS;
 using TDNHCS.Models;
 using TDNHCS.Services;
 
@@ -63,40 +64,25 @@ public partial class DocumentDetailViewModel : ObservableObject
         if (dialog.ShowDialog() == true)
         {
             var originalFileName = Path.GetFileName(dialog.FileName);
-            var ext = Path.GetExtension(dialog.FileName);
+            Document.FilePath = dialog.FileName;
+            Document.OriginalFileName = originalFileName;
 
-            // Lưu với tên GUID để ẩn nội dung, không lộ tên file gốc
-            var storedFileName = Guid.NewGuid().ToString("N") + ext;
-            var destinationPath = Path.Combine(AppPaths.AttachmentsFolder, storedFileName);
-
-            try
-            {
-                File.Copy(dialog.FileName, destinationPath, true);
-                Document.FilePath = destinationPath;
-                Document.OriginalFileName = originalFileName;
-
-                MessageBox.Show("Đính kèm file thành công!", "Thông báo",
-                    MessageBoxButton.OK, MessageBoxImage.Information);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Lỗi khi sao chép file: {ex.Message}", "Lỗi",
-                    MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+            MessageBox.Show("Đã chọn file đính kèm. File sẽ được lưu khi bạn bấm Lưu văn bản.",
+                "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
         }
     }
 
     [RelayCommand]
     private void OpenFile()
     {
-        if (string.IsNullOrWhiteSpace(Document.FilePath))
+        if (string.IsNullOrWhiteSpace(Document.ResolvedFilePath))
         {
             MessageBox.Show("Chưa có file đính kèm!", "Thông báo",
                 MessageBoxButton.OK, MessageBoxImage.Warning);
             return;
         }
 
-        if (!File.Exists(Document.FilePath))
+        if (!File.Exists(Document.ResolvedFilePath))
         {
             MessageBox.Show("File không tồn tại!", "Lỗi",
                 MessageBoxButton.OK, MessageBoxImage.Error);
@@ -107,7 +93,7 @@ public partial class DocumentDetailViewModel : ObservableObject
         {
             Process.Start(new ProcessStartInfo
             {
-                FileName = Document.FilePath,
+                FileName = Document.ResolvedFilePath,
                 UseShellExecute = true
             });
         }
@@ -145,8 +131,12 @@ public partial class DocumentDetailViewModel : ObservableObject
             }
             else
             {
+                var isFirstDocument = !AppPaths.IsInitialized;
                 await _documentService.AddDocumentAsync(Document);
-                MessageBox.Show("Thêm văn bản thành công!", "Thông báo",
+                var message = isFirstDocument
+                    ? "Thêm văn bản thành công!\n\nHệ thống đã tạo thư mục lưu trữ tại D:\\SysCache_QLVB."
+                    : "Thêm văn bản thành công!";
+                MessageBox.Show(message, "Thông báo",
                     MessageBoxButton.OK, MessageBoxImage.Information);
             }
 

@@ -27,8 +27,7 @@ public partial class App : Application
         ConfigureServices(services);
         _serviceProvider = services.BuildServiceProvider();
 
-        // Khởi tạo database
-        await InitializeDatabaseAsync();
+        // Không tạo database lúc khởi động — chờ người dùng thêm văn bản đầu tiên.
 
         // Dùng scope để resolve các scoped services cho màn đăng nhập
         using var loginScope = _serviceProvider.CreateScope();
@@ -57,11 +56,13 @@ public partial class App : Application
         services.AddDbContext<DocumentDbContext>();
 
         // Services
+        services.AddSingleton<DataStoreBootstrap>();
         services.AddScoped<DocumentService>();
         services.AddScoped<UserService>();
         services.AddSingleton<ExportService>();
         services.AddSingleton<PrintService>();
         services.AddSingleton<GitHubUpdateService>();
+        services.AddSingleton<BackupRestoreService>();
 
         // ViewModels
         services.AddScoped<MainViewModel>();
@@ -70,28 +71,6 @@ public partial class App : Application
 
         // Views
         services.AddScoped<MainWindow>();
-    }
-
-    private async Task InitializeDatabaseAsync()
-    {
-        using var scope = _serviceProvider!.CreateScope();
-        var context = scope.ServiceProvider.GetRequiredService<DocumentDbContext>();
-
-        // Tạo database nếu chưa có
-        await context.Database.EnsureCreatedAsync();
-        await EnsureDocumentContentColumnAsync(context);
-    }
-
-    private static async Task EnsureDocumentContentColumnAsync(DocumentDbContext context)
-    {
-        try
-        {
-            await context.Database.ExecuteSqlRawAsync("ALTER TABLE Documents ADD COLUMN Content TEXT");
-        }
-        catch
-        {
-            // Database mới đã có cột này, database cũ chỉ cần thêm một lần.
-        }
     }
 
     protected override void OnExit(ExitEventArgs e)
