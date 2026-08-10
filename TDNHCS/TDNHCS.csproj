@@ -9,6 +9,7 @@
     <Version>1.0.1</Version>
     <AssemblyVersion>1.0.1.0</AssemblyVersion>
     <FileVersion>1.0.1.0</FileVersion>
+    <!-- ApplicationIcon>Assets\icon.ico</ApplicationIcon --> <!-- Bỏ comment khi đã đặt file icon.ico vào Assets\ -->
   </PropertyGroup>
 
   <ItemGroup>
@@ -26,10 +27,22 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Assets\**\*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
     <Content Include="tessdata\**\*">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="Assets\banner.png.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Assets\banner.png.png" />
   </ItemGroup>
 
 </Project>
