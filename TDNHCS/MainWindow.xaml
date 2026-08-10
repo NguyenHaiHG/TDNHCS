@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:TDNHCS"
         xmlns:views="clr-namespace:TDNHCS.Views"
         mc:Ignorable="d"
-        Title="Hệ thống Quản lý Văn bản" Height="600" Width="1000"
+        Title="Phần mềm tiện ích tổng hợp" Height="600" Width="1000"
         WindowStartupLocation="CenterScreen">
     <Window.Resources>
         <Style x:Key="PlaceholderTextBox" TargetType="TextBox">
@@ -213,7 +213,17 @@
 
     <Grid Margin="10">
         <TabControl>
-            <TabItem Header="Quản lý văn bản">
+        <TabItem Header="Trang chủ">
+                <Grid Margin="8">
+                    <TextBlock Text="Chào mừng bạn đến với Hệ thống Phần mềm tiện ích"
+                               FontSize="24"
+                               FontWeight="Bold"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"
+                               Foreground="#2C3E50"/>
+    </Grid>
+    </TabItem>
+    <TabItem Header="Quản lý văn bản">
                 <Grid Margin="8">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
@@ -310,7 +320,7 @@
                         BorderThickness="0"
                         Cursor="Hand" Style="{StaticResource RoundedButton}"/>
 
-                            <Button Content="🔑 Đổi mật khẩu"
+                            <Button Content="🔑 Đổi đăng nhập"
                         Command="{Binding ChangePasswordCommand}"
                         Padding="15,8"
                         Margin="5,0,0,0"
@@ -414,6 +424,46 @@
                 </Grid>
             </TabItem>
 
+            <TabItem Header="So sánh văn bản">
+                <views:DocumentCompareView x:Name="DocumentCompareView"/>
+            </TabItem>
+            
+            <TabItem Header="Tạo hồ sơ GQVL">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <Grid Margin="8">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                    </Grid>
+                </ScrollViewer> 
+            </TabItem>
+            
+            <TabItem Header="Tạo hồ sơ NOXH">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <Grid Margin="8">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                    </Grid>
+                </ScrollViewer>
+            </TabItem>
+            
+            <TabItem Header="Tạo hồ sơ XKLĐ">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <Grid Margin="8">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                    </Grid>
+                </ScrollViewer>
+            </TabItem>
+
             <TabItem Header="Giới thiệu">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <Grid Margin="28">
@@ -433,7 +483,7 @@
                                            FontSize="26"
                                            FontWeight="Bold"
                                            Foreground="#2C3E50"/>
-                                <TextBlock Text="Hệ thống quản lý văn bản nội bộ"
+                                <TextBlock Text="Hệ thống các tiện ích hỗ trợ cán bộ"
                                            FontSize="16"
                                            Foreground="#566573"
                                            Margin="0,8,0,0"/>
@@ -508,6 +558,10 @@
                                                FontSize="14"
                                                Foreground="#566573"
                                                Margin="0,0,0,6"/>
+                                    <TextBlock Text="• Tesseract OCR tiếng Việt/Anh chạy ngoại tuyến"
+                                               FontSize="14"
+                                               Foreground="#566573"
+                                               Margin="0,0,0,6"/>
                                     <TextBlock Text="• Cập nhật tự động qua mạng"
                                                FontSize="14"
                                                Foreground="#566573"
@@ -527,7 +581,7 @@
                                 Padding="18"
                                 Margin="0,18,0,0">
                             <StackPanel>
-                                <TextBlock Text="Thư mục chương trình: D:\QLVB  |  Dữ liệu: D:\SysCache_QLVB (tự tạo khi thêm văn bản đầu tiên)"
+                                <TextBlock Text="Thư mục chương trình: D:\QLVB  |  Dữ liệu: D:\SysCache_QLVB (tự tạo khi thêm văn bản hoặc dữ liệu đầu tiên)"
                                            TextWrapping="Wrap"
                                            FontSize="14"
                                            Foreground="#7D6608"
@@ -542,7 +596,7 @@
             </TabItem>
         </TabControl>
 
-        <!-- Chatbot nổi: robot AI tai Doraemon -->
+        <!-- Chatbot nổi: robot AI -->
         <Grid Grid.RowSpan="4"
               Panel.ZIndex="20"
               HorizontalAlignment="Right"

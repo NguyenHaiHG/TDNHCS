@@ -216,7 +216,10 @@ public partial class MainViewModel : ObservableObject
         var documentToEdit = await _documentService.GetDocumentByIdAsync(SelectedDocument.Id);
         if (documentToEdit == null) return;
 
-        var viewModel = new DocumentDetailViewModel(_documentService, documentToEdit);
+        var viewModel = new DocumentDetailViewModel(
+            _documentService,
+            _serviceProvider.GetRequiredService<DocumentTextService>(),
+            documentToEdit);
         var window = new DocumentDetailWindow(viewModel);
 
         if (window.ShowDialog() == true)

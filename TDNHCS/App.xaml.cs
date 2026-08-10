@@ -63,9 +63,13 @@ public partial class App : Application
         services.AddSingleton<PrintService>();
         services.AddSingleton<GitHubUpdateService>();
         services.AddSingleton<BackupRestoreService>();
+        services.AddSingleton<OcrService>();
+        services.AddSingleton<DocumentTextService>();
+        services.AddSingleton<TextComparisonService>();
 
         // ViewModels
         services.AddScoped<MainViewModel>();
+        services.AddScoped<DocumentCompareViewModel>();
         services.AddTransient<DocumentDetailViewModel>();
         services.AddScoped<LoginViewModel>();
 

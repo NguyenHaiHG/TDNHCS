@@ -14,6 +14,7 @@ namespace TDNHCS.ViewModels;
 public partial class DocumentDetailViewModel : ObservableObject
 {
     private readonly DocumentService _documentService;
+    private readonly DocumentTextService _documentTextService;
     private readonly bool _isEditMode;
 
     [ObservableProperty]
@@ -24,9 +25,13 @@ public partial class DocumentDetailViewModel : ObservableObject
 
     public event Action<bool>? CloseRequested;
 
-    public DocumentDetailViewModel(DocumentService documentService, Document? document = null)
+    public DocumentDetailViewModel(
+        DocumentService documentService,
+        DocumentTextService documentTextService,
+        Document? document = null)
     {
         _documentService = documentService;
+        _documentTextService = documentTextService;
         _isEditMode = document != null;
         
         Document = document ?? new Document
@@ -58,7 +63,7 @@ public partial class DocumentDetailViewModel : ObservableObject
         var dialog = new OpenFileDialog
         {
             Title = "Chọn file đính kèm",
-            Filter = "All Files (*.*)|*.*|PDF Files (*.pdf)|*.pdf|Word Files (*.docx;*.doc)|*.docx;*.doc|Excel Files (*.xlsx;*.xls)|*.xlsx;*.xls"
+            Filter = "Tất cả file hỗ trợ (*.pdf;*.png;*.jpg;*.jpeg;*.bmp;*.tif;*.tiff;*.docx;*.txt)|*.pdf;*.png;*.jpg;*.jpeg;*.bmp;*.tif;*.tiff;*.docx;*.txt|PDF và ảnh scan (*.pdf;*.png;*.jpg;*.jpeg;*.bmp;*.tif;*.tiff)|*.pdf;*.png;*.jpg;*.jpeg;*.bmp;*.tif;*.tiff|Word và Text (*.docx;*.txt)|*.docx;*.txt|Tất cả file (*.*)|*.*"
         };
 
         if (dialog.ShowDialog() == true)
@@ -69,6 +74,51 @@ public partial class DocumentDetailViewModel : ObservableObject
 
             MessageBox.Show("Đã chọn file đính kèm. File sẽ được lưu khi bạn bấm Lưu văn bản.",
                 "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+    }
+
+    [RelayCommand]
+    private async Task ExtractContentAsync()
+    {
+        var filePath = Document.ResolvedFilePath;
+        if (string.IsNullOrWhiteSpace(filePath) || !File.Exists(filePath))
+        {
+            MessageBox.Show(
+                "Vui lòng chọn file PDF scan hoặc file ảnh trước.",
+                "Đọc nội dung OCR",
+                MessageBoxButton.OK,
+                MessageBoxImage.Warning);
+            return;
+        }
+
+        try
+        {
+            var text = await Task.Run(() => _documentTextService.ReadFile(filePath));
+            if (string.IsNullOrWhiteSpace(text))
+            {
+                MessageBox.Show(
+                    "OCR hoàn tất nhưng không nhận diện được nội dung.",
+                    "Đọc nội dung OCR",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Information);
+                return;
+            }
+
+            Document.Content = text;
+            OnPropertyChanged(nameof(Document));
+            MessageBox.Show(
+                "Đã đọc nội dung và điền vào ô Nội dung văn bản.",
+                "Đọc nội dung OCR",
+                MessageBoxButton.OK,
+                MessageBoxImage.Information);
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(
+                $"Không thể đọc nội dung file: {ex.Message}",
+                "Lỗi OCR",
+                MessageBoxButton.OK,
+                MessageBoxImage.Error);
         }
     }
 

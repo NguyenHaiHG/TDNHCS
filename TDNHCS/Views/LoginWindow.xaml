@@ -48,10 +48,31 @@
                          BorderBrush="#BDC3C7" BorderThickness="1"/>
 
                 <TextBlock Text="Mật khẩu" FontWeight="SemiBold" Margin="0,0,0,5"/>
-                <PasswordBox x:Name="txtPassword" 
-                             PasswordChanged="PasswordBox_PasswordChanged"
-                             FontSize="14" Padding="10" Margin="0,0,0,10"
+                <Grid Margin="0,0,0,10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="42"/>
+                    </Grid.ColumnDefinitions>
+                    <PasswordBox x:Name="txtPassword"
+                                 PasswordChanged="PasswordBox_PasswordChanged"
+                                 FontSize="14" Padding="10"
+                                 BorderBrush="#BDC3C7" BorderThickness="1"/>
+                    <TextBox x:Name="txtPasswordVisible"
+                             Grid.Column="0"
+                             Visibility="Collapsed"
+                             TextChanged="VisiblePassword_TextChanged"
+                             FontSize="14" Padding="10"
                              BorderBrush="#BDC3C7" BorderThickness="1"/>
+                    <Button x:Name="btnTogglePassword"
+                            Grid.Column="1"
+                            Content="👁"
+                            Click="TogglePasswordVisibility_Click"
+                            ToolTip="Hiện mật khẩu"
+                            FontSize="16"
+                            Background="#ECF0F1"
+                            BorderBrush="#BDC3C7"
+                            Cursor="Hand"/>
+                </Grid>
 
                 <TextBlock x:Name="txtError" 
                            Text="{Binding ErrorMessage}"
@@ -65,6 +86,7 @@
             <StackPanel Grid.Row="2">
                 <Button Content="🔓 Đăng nhập"
                         Command="{Binding LoginCommand}"
+                        IsDefault="True"
                         Padding="0,12"
                         FontSize="14" FontWeight="SemiBold"
                         Background="#3498DB" Foreground="White"

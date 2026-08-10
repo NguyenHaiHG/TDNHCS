@@ -10,6 +10,9 @@ public partial class ChangePasswordViewModel : ObservableObject
     private readonly UserService _userService;
 
     [ObservableProperty]
+    private string _username;
+
+    [ObservableProperty]
     private string _oldPassword = string.Empty;
 
     [ObservableProperty]
@@ -29,6 +32,7 @@ public partial class ChangePasswordViewModel : ObservableObject
     public ChangePasswordViewModel(UserService userService)
     {
         _userService = userService;
+        _username = LoginViewModel.CurrentUser?.Username ?? string.Empty;
     }
 
     [RelayCommand]
@@ -36,6 +40,14 @@ public partial class ChangePasswordViewModel : ObservableObject
     {
         HasError = false;
         ErrorMessage = string.Empty;
+
+        Username = Username.Trim();
+        if (Username.Length < 3 || Username.Length > 100 || Username.Any(char.IsWhiteSpace))
+        {
+            ErrorMessage = "Tên đăng nhập phải từ 3 đến 100 ký tự và không chứa khoảng trắng!";
+            HasError = true;
+            return;
+        }
 
         if (string.IsNullOrWhiteSpace(OldPassword))
         {
@@ -58,18 +70,34 @@ public partial class ChangePasswordViewModel : ObservableObject
             return;
         }
 
-        var username = LoginViewModel.CurrentUser?.Username ?? string.Empty;
-        var success = await _userService.ChangePasswordAsync(username, OldPassword, NewPassword);
+        var currentUsername = LoginViewModel.CurrentUser?.Username ?? string.Empty;
+        var result = await _userService.UpdateCredentialsAsync(
+            currentUsername,
+            Username,
+            OldPassword,
+            NewPassword);
 
-        if (success)
+        if (result == CredentialUpdateResult.Success)
         {
-            MessageBox.Show("Đổi mật khẩu thành công!", "Thông báo",
+            if (LoginViewModel.CurrentUser != null)
+            {
+                LoginViewModel.CurrentUser.Username = Username;
+                LoginViewModel.CurrentUser.PasswordHash =
+                    TDNHCS.Data.DocumentDbContext.HashPassword(NewPassword);
+            }
+
+            MessageBox.Show("Cập nhật tên đăng nhập và mật khẩu thành công!", "Thông báo",
                 MessageBoxButton.OK, MessageBoxImage.Information);
             CloseRequested?.Invoke();
         }
         else
         {
-            ErrorMessage = "Mật khẩu cũ không đúng!";
+            ErrorMessage = result switch
+            {
+                CredentialUpdateResult.UsernameTaken => "Tên đăng nhập này đã được sử dụng!",
+                CredentialUpdateResult.NotInitialized => "Dữ liệu ứng dụng chưa được khởi tạo!",
+                _ => "Mật khẩu cũ không đúng!"
+            };
             HasError = true;
         }
     }

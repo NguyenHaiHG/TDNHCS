@@ -57,6 +57,11 @@ dotnet publish $project `
     -p:DebugSymbols=false `
     -o $publishDir
 
+$publishedExe = Join-Path $publishDir "TDNHCS.exe"
+if (-not (Test-Path $publishedExe)) {
+    throw "Publish không tạo ra $publishedExe. Dừng đóng gói để tránh tạo installer không mở được app."
+}
+
 Write-Host "==> Tạo installer (version $version)..."
 & $iscc "/DMyAppVersion=$version" $installerScript
 

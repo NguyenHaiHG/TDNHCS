@@ -40,18 +40,44 @@ public class UserService
     /// </summary>
     public async Task<bool> ChangePasswordAsync(string username, string oldPassword, string newPassword)
     {
+        var result = await UpdateCredentialsAsync(username, username, oldPassword, newPassword);
+        return result == CredentialUpdateResult.Success;
+    }
+
+    /// <summary>
+    /// Đổi tên đăng nhập và mật khẩu của tài khoản hiện tại.
+    /// </summary>
+    public async Task<CredentialUpdateResult> UpdateCredentialsAsync(
+        string currentUsername,
+        string newUsername,
+        string oldPassword,
+        string newPassword)
+    {
         if (!AppPaths.IsInitialized)
         {
-            return false;
+            return CredentialUpdateResult.NotInitialized;
         }
 
-        var user = await LoginAsync(username, oldPassword);
-        if (user == null) return false;
+        var user = await LoginAsync(currentUsername, oldPassword);
+        if (user == null)
+        {
+            return CredentialUpdateResult.InvalidPassword;
+        }
 
+        newUsername = newUsername.Trim();
+        var normalizedUsername = newUsername.ToLower();
+        var usernameTaken = await _context.Users.AnyAsync(
+            candidate => candidate.Id != user.Id &&
+                         candidate.Username.ToLower() == normalizedUsername);
+        if (usernameTaken)
+        {
+            return CredentialUpdateResult.UsernameTaken;
+        }
+
+        user.Username = newUsername;
         user.PasswordHash = DocumentDbContext.HashPassword(newPassword);
-        _context.Users.Update(user);
         await _context.SaveChangesAsync();
-        return true;
+        return CredentialUpdateResult.Success;
     }
 
     public bool IsUsingDefaultAdminPassword(User? user)
@@ -74,4 +100,12 @@ public class UserService
             CreatedDate = new DateTime(2024, 1, 1)
         };
     }
+}
+
+public enum CredentialUpdateResult
+{
+    Success,
+    InvalidPassword,
+    UsernameTaken,
+    NotInitialized
 }
