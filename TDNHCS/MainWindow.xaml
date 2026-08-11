@@ -8,7 +8,7 @@
         mc:Ignorable="d"
         Title="Phần mềm tiện ích tổng hợp" Height="600" Width="1000"
         WindowStartupLocation="CenterScreen"
-        Icon="Assets/icon.ico">
+        Icon="pack://application:,,,/Assets/icon.ico">
     <Window.Resources>
         <Style x:Key="PlaceholderTextBox" TargetType="TextBox">
 
@@ -214,7 +214,7 @@
 
     <Grid Margin="10">
         <!-- Ảnh nền mờ toàn app -->
-        <Image Source="Assets/banner.png"
+        <Image Source="pack://application:,,,/Assets/banner.png"
                Stretch="UniformToFill"
                Opacity="0.18"
                HorizontalAlignment="Stretch"
@@ -222,7 +222,7 @@
         <TabControl Background="Transparent" BorderBrush="#33000000" BorderThickness="1">
         <TabItem Header="Trang chủ">
                 <Grid>
-                    <Image Source="Assets/banner.png"
+                    <Image Source="pack://application:,,,/Assets/banner.png"
                            Stretch="UniformToFill"
                            HorizontalAlignment="Center"
                            VerticalAlignment="Center"/>

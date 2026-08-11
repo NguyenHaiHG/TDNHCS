@@ -562,12 +562,14 @@ public partial class MainViewModel : ObservableObject
 
             if (string.IsNullOrWhiteSpace(result.DownloadUrl))
             {
-                MessageBox.Show(
-                    $"Có phiên bản mới {result.LatestVersion} nhưng chưa tải được gói cập nhật.\n\nPhần mềm sẽ thoát.",
-                    "Cập nhật",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Warning);
-                Application.Current.Shutdown();
+                if (showNoUpdateMessage)
+                {
+                    MessageBox.Show(
+                        $"Có phiên bản mới {result.LatestVersion} nhưng chưa tải được gói cập nhật.\n\nVui lòng thử lại sau.",
+                        "Cập nhật",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Warning);
+                }
                 return;
             }
 
@@ -575,15 +577,18 @@ public partial class MainViewModel : ObservableObject
                 ? "Không có ghi chú phiên bản."
                 : result.ReleaseNotes;
 
+            var confirmMessage = showNoUpdateMessage
+                ? $"Có phiên bản mới: {result.LatestVersion}\nPhiên bản hiện tại: {result.CurrentVersion}\n\n{notes}\n\nBạn có muốn tải và cài đặt ngay không?"
+                : $"Có phiên bản mới: {result.LatestVersion}\nPhiên bản hiện tại: {result.CurrentVersion}\n\n{notes}\n\nBạn có muốn cập nhật ngay không? Chọn Không để tiếp tục dùng phiên bản hiện tại."
+;
             var confirm = MessageBox.Show(
-                $"Có phiên bản mới: {result.LatestVersion}\nPhiên bản hiện tại: {result.CurrentVersion}\n\n{notes}\n\nBạn cần cập nhật để tiếp tục sử dụng.\nChọn Có để tải và cài đặt.\nChọn Không sẽ thoát phần mềm.",
+                confirmMessage,
                 "Cập nhật phần mềm",
                 MessageBoxButton.YesNo,
-                MessageBoxImage.Warning);
+                MessageBoxImage.Information);
 
             if (confirm != MessageBoxResult.Yes)
             {
-                Application.Current.Shutdown();
                 return;
             }
 

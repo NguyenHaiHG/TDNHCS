@@ -19,6 +19,27 @@ public partial class App : Application
     {
         base.OnStartup(e);
 
+        // Bắt mọi exception chưa được xử lý
+        AppDomain.CurrentDomain.UnhandledException += (_, args) =>
+        {
+            var msg = args.ExceptionObject?.ToString() ?? "Unknown error";
+            var logPath = System.IO.Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "TDNHCS_error.txt");
+            System.IO.File.WriteAllText(logPath, msg);
+            MessageBox.Show($"Lỗi nghiêm trọng:\n\n{(args.ExceptionObject as Exception)?.Message}\n\nChi tiết đã được lưu tại:\n{logPath}",
+                "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+        };
+
+        DispatcherUnhandledException += (_, args) =>
+        {
+            var logPath = System.IO.Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "TDNHCS_error.txt");
+            System.IO.File.WriteAllText(logPath, args.Exception.ToString());
+            MessageBox.Show($"Lỗi:\n\n{args.Exception.Message}\n\nChi tiết đã được lưu tại:\n{logPath}",
+                "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+            args.Handled = true;
+        };
+
         // Ngăn WPF tự tắt khi LoginWindow đóng
         ShutdownMode = ShutdownMode.OnExplicitShutdown;
 
@@ -36,12 +57,24 @@ public partial class App : Application
 
         if (loginWindow.ShowDialog() == true)
         {
-            // Đăng nhập thành công -> Hiển thị MainWindow trong scope mới
-            var mainScope = _serviceProvider.CreateScope();
-            var mainWindow = mainScope.ServiceProvider.GetRequiredService<MainWindow>();
-            ShutdownMode = ShutdownMode.OnMainWindowClose;
-            MainWindow = mainWindow;
-            mainWindow.Show();
+            try
+            {
+                // Đăng nhập thành công -> Hiển thị MainWindow trong scope mới
+                var mainScope = _serviceProvider.CreateScope();
+                var mainWindow = mainScope.ServiceProvider.GetRequiredService<MainWindow>();
+                ShutdownMode = ShutdownMode.OnMainWindowClose;
+                MainWindow = mainWindow;
+                mainWindow.Show();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    $"Không thể mở cửa sổ chính:\n\n{ex.Message}\n\n{ex.InnerException?.Message}",
+                    "Lỗi khởi động",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+                Shutdown();
+            }
         }
         else
         {
