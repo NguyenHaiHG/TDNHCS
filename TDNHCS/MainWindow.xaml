@@ -7,84 +7,8 @@
         xmlns:views="clr-namespace:TDNHCS.Views"
         mc:Ignorable="d"
         Title="Phần mềm tiện ích tổng hợp" Height="600" Width="1000"
-        WindowStartupLocation="CenterScreen">
-    <Window.Icon>
-        <DrawingImage>
-            <DrawingImage.Drawing>
-                <DrawingGroup>
-                    <!-- Nền tròn xanh lá nhạt -->
-                    <GeometryDrawing Brush="#E8F5E9">
-                        <GeometryDrawing.Geometry>
-                            <EllipseGeometry RadiusX="50" RadiusY="50" Center="50,50"/>
-                        </GeometryDrawing.Geometry>
-                    </GeometryDrawing>
-                    <!-- Cánh sen ngoài 0° -->
-                    <GeometryDrawing Brush="#FF69B4">
-                        <GeometryDrawing.Geometry><PathGeometry Figures="M50,8 C54,22 62,32 50,42 C38,32 46,22 50,8 Z"/></GeometryDrawing.Geometry>
-                    </GeometryDrawing>
-                    <!-- Cánh sen ngoài 45° -->
-                    <GeometryDrawing Brush="#FF69B4">
-                        <GeometryDrawing.Geometry><PathGeometry Figures="M74,26 C66,38 66,50 57,54 C53,43 58,33 74,26 Z"/></GeometryDrawing.Geometry>
-                    </GeometryDrawing>
-                    <!-- Cánh sen ngoài 90° -->
-                    <GeometryDrawing Brush="#FF69B4">
-                        <GeometryDrawing.Geometry><PathGeometry Figures="M92,50 C78,54 68,62 58,50 C68,38 78,46 92,50 Z"/></GeometryDrawing.Geometry>
-                    </GeometryDrawing>
-                    <!-- Cánh sen ngoài 135° -->
-                    <GeometryDrawing Brush="#FF69B4">
-                        <GeometryDrawing.Geometry><PathGeometry Figures="M74,74 C62,66 50,66 46,57 C57,53 67,58 74,74 Z"/></GeometryDrawing.Geometry>
-                    </GeometryDrawing>
-                    <!-- Cánh sen ngoài 180° -->
-                    <GeometryDrawing Brush="#FF69B4">
-                        <GeometryDrawing.Geometry><PathGeometry Figures="M50,92 C46,78 38,68 50,58 C62,68 54,78 50,92 Z"/></GeometryDrawing.Geometry>
-                    </GeometryDrawing>
-                    <!-- Cánh sen ngoài 225° -->
-                    <GeometryDrawing Brush="#FF69B4">
-                        <GeometryDrawing.Geometry><PathGeometry Figures="M26,74 C34,62 34,50 43,46 C47,57 42,67 26,74 Z"/></GeometryDrawing.Geometry>
-                    </GeometryDrawing>
-                    <!-- Cánh sen ngoài 270° -->
-                    <GeometryDrawing Brush="#FF69B4">
-                        <GeometryDrawing.Geometry><PathGeometry Figures="M8,50 C22,46 32,38 42,50 C32,62 22,54 8,50 Z"/></GeometryDrawing.Geometry>
-                    </GeometryDrawing>
-                    <!-- Cánh sen ngoài 315° -->
-                    <GeometryDrawing Brush="#FF69B4">
-                        <GeometryDrawing.Geometry><PathGeometry Figures="M26,26 C38,34 50,34 54,43 C43,47 33,42 26,26 Z"/></GeometryDrawing.Geometry>
-                    </GeometryDrawing>
-                    <!-- Cánh sen trong 0° -->
-                    <GeometryDrawing Brush="#FF1493">
-                        <GeometryDrawing.Geometry><PathGeometry Figures="M50,20 C53,30 58,36 50,44 C42,36 47,30 50,20 Z"/></GeometryDrawing.Geometry>
-                    </GeometryDrawing>
-                    <!-- Cánh sen trong 60° -->
-                    <GeometryDrawing Brush="#FF1493">
-                        <GeometryDrawing.Geometry><PathGeometry Figures="M67,33 C61,42 61,50 54,55 C50,46 55,39 67,33 Z"/></GeometryDrawing.Geometry>
-                    </GeometryDrawing>
-                    <!-- Cánh sen trong 120° -->
-                    <GeometryDrawing Brush="#FF1493">
-                        <GeometryDrawing.Geometry><PathGeometry Figures="M67,67 C58,61 50,61 45,54 C54,50 61,55 67,67 Z"/></GeometryDrawing.Geometry>
-                    </GeometryDrawing>
-                    <!-- Cánh sen trong 180° -->
-                    <GeometryDrawing Brush="#FF1493">
-                        <GeometryDrawing.Geometry><PathGeometry Figures="M50,80 C47,70 42,64 50,56 C58,64 53,70 50,80 Z"/></GeometryDrawing.Geometry>
-                    </GeometryDrawing>
-                    <!-- Cánh sen trong 240° -->
-                    <GeometryDrawing Brush="#FF1493">
-                        <GeometryDrawing.Geometry><PathGeometry Figures="M33,67 C39,58 39,50 46,45 C50,54 45,61 33,67 Z"/></GeometryDrawing.Geometry>
-                    </GeometryDrawing>
-                    <!-- Cánh sen trong 300° -->
-                    <GeometryDrawing Brush="#FF1493">
-                        <GeometryDrawing.Geometry><PathGeometry Figures="M33,33 C42,39 50,39 55,46 C46,50 39,45 33,33 Z"/></GeometryDrawing.Geometry>
-                    </GeometryDrawing>
-                    <!-- Nhụy vàng -->
-                    <GeometryDrawing Brush="#FFD700">
-                        <GeometryDrawing.Geometry><EllipseGeometry RadiusX="9" RadiusY="9" Center="50,50"/></GeometryDrawing.Geometry>
-                    </GeometryDrawing>
-                    <GeometryDrawing Brush="#FFA500">
-                        <GeometryDrawing.Geometry><EllipseGeometry RadiusX="5" RadiusY="5" Center="50,50"/></GeometryDrawing.Geometry>
-                    </GeometryDrawing>
-                </DrawingGroup>
-            </DrawingImage.Drawing>
-        </DrawingImage>
-    </Window.Icon>
+        WindowStartupLocation="CenterScreen"
+        Icon="Assets/icon.ico">
     <Window.Resources>
         <Style x:Key="PlaceholderTextBox" TargetType="TextBox">
 
@@ -295,7 +219,7 @@
                Opacity="0.18"
                HorizontalAlignment="Stretch"
                VerticalAlignment="Stretch"/>
-        <TabControl Background="Transparent">
+        <TabControl Background="Transparent" BorderBrush="#33000000" BorderThickness="1">
         <TabItem Header="Trang chủ">
                 <Grid>
                     <Image Source="Assets/banner.png"
@@ -511,13 +435,9 @@
             
             <TabItem Header="Tạo hồ sơ GQVL">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
-                    <Grid Margin="8">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                        </Grid.RowDefinitions>
-                    </Grid>
+                    <Label>
+                        <Label Content="Thông tin khách hàng:"/>
+                    </Label>
                 </ScrollViewer> 
             </TabItem>
             

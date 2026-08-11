@@ -18,6 +18,10 @@ mono_crash.*
 
 # Build results
 [Dd]ebug/
+
+# Installer output - file quá lớn, upload lên GitHub Releases thay vì commit
+dist/
+publish/
 [Dd]ebugPublic/
 [Rr]elease/
 [Rr]eleases/

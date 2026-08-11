@@ -6,7 +6,8 @@
              xmlns:models="clr-namespace:TDNHCS.Models"
              mc:Ignorable="d"
              d:DesignHeight="500"
-             d:DesignWidth="950">
+             d:DesignWidth="950"
+             Background="Transparent">
     <UserControl.Resources>
         <Style x:Key="CompareButton" TargetType="Button">
             <Setter Property="Foreground" Value="White"/>
@@ -14,6 +15,15 @@
             <Setter Property="Padding" Value="14,7"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Margin" Value="5,0,0,0"/>
+        </Style>
+        <Style x:Key="GlassBox" TargetType="GroupBox">
+            <Setter Property="Background" Value="#CCF8F8F8"/>
+            <Setter Property="BorderBrush" Value="#AACCCCCC"/>
+            <Setter Property="BorderThickness" Value="1"/>
+        </Style>
+        <Style x:Key="GlassTextBox" TargetType="TextBox">
+            <Setter Property="Background" Value="#DDFFFFFF"/>
+            <Setter Property="BorderBrush" Value="#BBCCCCCC"/>
         </Style>
         <Style x:Key="WrappedCell" TargetType="TextBlock">
             <Setter Property="TextWrapping" Value="Wrap"/>
@@ -25,33 +35,33 @@
     <Grid Margin="8">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="150"/>
+            <RowDefinition Height="160"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
         <TextBlock Grid.Row="0"
-                   Text="SO SÁNH VĂN BẢN BẰNG DIFF VÀ TF-IDF"
-                   FontSize="22"
-                   FontWeight="Bold"
+                   Text="SO SÁNH VĂN BẢN"
+                   FontSize="20" FontWeight="Bold"
                    HorizontalAlignment="Center"
-                   Foreground="#2C3E50"
-                   Margin="0,0,0,10"/>
+                   Foreground="#2C3E50" Margin="0,0,0,8"/>
 
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="12"/>
+                <ColumnDefinition Width="10"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <GroupBox Grid.Column="0" Header="Văn bản thứ nhất" Padding="8">
+            <GroupBox Grid.Column="0" Header="Văn bản thứ nhất" Padding="6"
+                      Style="{StaticResource GlassBox}">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
-                    <Grid Grid.Row="0" Margin="0,0,0,6">
+                    <Grid Grid.Row="0" Margin="0,0,0,4">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
@@ -59,30 +69,30 @@
                         <ComboBox ItemsSource="{Binding Documents}"
                                   SelectedItem="{Binding SelectedLeftDocument}"
                                   DisplayMemberPath="Title"
+                                  Background="#DDFFFFFF"
                                   ToolTip="Chọn văn bản đã lưu"/>
-                        <Button Grid.Column="1"
-                                Content="Mở file"
+                        <Button Grid.Column="1" Content="📂 Mở file"
                                 Command="{Binding BrowseLeftCommand}"
                                 Background="#2980B9"
                                 Style="{StaticResource CompareButton}"/>
                     </Grid>
                     <TextBox Grid.Row="1"
                              Text="{Binding LeftText, UpdateSourceTrigger=PropertyChanged}"
-                             AcceptsReturn="True"
-                             TextWrapping="Wrap"
-                             VerticalScrollBarVisibility="Auto"
-                             Padding="6"
-                             ToolTip="Có thể nhập hoặc dán trực tiếp nội dung"/>
+                             AcceptsReturn="True" TextWrapping="Wrap"
+                             VerticalScrollBarVisibility="Auto" Padding="6"
+                             Style="{StaticResource GlassTextBox}"
+                             ToolTip="Hỗ trợ: TXT, DOCX, PDF text, PDF scan (OCR), ảnh PNG/JPG"/>
                 </Grid>
             </GroupBox>
 
-            <GroupBox Grid.Column="2" Header="Văn bản thứ hai" Padding="8">
+            <GroupBox Grid.Column="2" Header="Văn bản thứ hai" Padding="6"
+                      Style="{StaticResource GlassBox}">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
-                    <Grid Grid.Row="0" Margin="0,0,0,6">
+                    <Grid Grid.Row="0" Margin="0,0,0,4">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
@@ -90,65 +100,73 @@
                         <ComboBox ItemsSource="{Binding Documents}"
                                   SelectedItem="{Binding SelectedRightDocument}"
                                   DisplayMemberPath="Title"
+                                  Background="#DDFFFFFF"
                                   ToolTip="Chọn văn bản đã lưu"/>
-                        <Button Grid.Column="1"
-                                Content="Mở file"
+                        <Button Grid.Column="1" Content="📂 Mở file"
                                 Command="{Binding BrowseRightCommand}"
                                 Background="#2980B9"
                                 Style="{StaticResource CompareButton}"/>
                     </Grid>
                     <TextBox Grid.Row="1"
                              Text="{Binding RightText, UpdateSourceTrigger=PropertyChanged}"
-                             AcceptsReturn="True"
-                             TextWrapping="Wrap"
-                             VerticalScrollBarVisibility="Auto"
-                             Padding="6"
-                             ToolTip="Có thể nhập hoặc dán trực tiếp nội dung"/>
+                             AcceptsReturn="True" TextWrapping="Wrap"
+                             VerticalScrollBarVisibility="Auto" Padding="6"
+                             Style="{StaticResource GlassTextBox}"
+                             ToolTip="Hỗ trợ: TXT, DOCX, PDF text, PDF scan (OCR), ảnh PNG/JPG"/>
                 </Grid>
             </GroupBox>
         </Grid>
 
-        <Grid Grid.Row="2" Margin="0,8">
+        <!-- Thanh trạng thái OCR -->
+        <Border Grid.Row="2" Background="#EEF4FF" BorderBrush="#BBCCDDFF"
+                BorderThickness="1" CornerRadius="4" Padding="8,4" Margin="0,4">
+            <TextBlock Text="{Binding SummaryDisplay}"
+                       Foreground="#2471A3" FontSize="12"
+                       TextWrapping="Wrap"/>
+        </Border>
+
+        <Grid Grid.Row="3" Margin="0,4">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
             <StackPanel Orientation="Horizontal">
-                <Button Content="So sánh"
+                <Button Content="⚡ So sánh"
                         Command="{Binding CompareCommand}"
                         Background="#27AE60"
-                        Style="{StaticResource CompareButton}"
-                        Margin="0"/>
-                <Button Content="Làm mới"
+                        Style="{StaticResource CompareButton}" Margin="0"/>
+                <Button Content="🔄 Làm mới"
                         Command="{Binding ClearCommand}"
                         Background="#7F8C8D"
                         Style="{StaticResource CompareButton}"/>
             </StackPanel>
-            <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center">
-                <TextBlock Text="{Binding SimilarityDisplay}"
-                           FontWeight="Bold"
-                           FontSize="15"
-                           Foreground="#2471A3"
-                           VerticalAlignment="Center"/>
-                <TextBlock Text="{Binding SummaryDisplay}"
-                           Margin="18,0,0,0"
-                           Foreground="#566573"
-                           VerticalAlignment="Center"/>
-            </StackPanel>
+            <TextBlock Grid.Column="1"
+                       Text="{Binding SimilarityDisplay}"
+                       FontWeight="Bold" FontSize="15"
+                       Foreground="#2471A3"
+                       VerticalAlignment="Center"
+                       HorizontalAlignment="Center"/>
             <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
-                <Border Background="#E8F8F5" Padding="6,3" Margin="4,0"><TextBlock Text="Xanh: thêm"/></Border>
-                <Border Background="#FDEDEC" Padding="6,3" Margin="4,0"><TextBlock Text="Đỏ: xóa"/></Border>
-                <Border Background="#FCF3CF" Padding="6,3" Margin="4,0"><TextBlock Text="Vàng: thay đổi"/></Border>
+                <Border Background="#E8F8F5" CornerRadius="3" Padding="6,3" Margin="3,0">
+                    <TextBlock Text="🟢 Thêm" FontSize="11"/>
+                </Border>
+                <Border Background="#FDEDEC" CornerRadius="3" Padding="6,3" Margin="3,0">
+                    <TextBlock Text="🔴 Xóa" FontSize="11"/>
+                </Border>
+                <Border Background="#FCF3CF" CornerRadius="3" Padding="6,3" Margin="3,0">
+                    <TextBlock Text="🟡 Thay đổi" FontSize="11"/>
+                </Border>
             </StackPanel>
         </Grid>
 
-        <DataGrid Grid.Row="3"
+        <DataGrid Grid.Row="4"
                   ItemsSource="{Binding DiffRows}"
                   AutoGenerateColumns="False"
                   CanUserAddRows="False"
                   IsReadOnly="True"
-                  AlternatingRowBackground="#F8F9FA"
+                  Background="#DDFAFAFA"
+                  AlternatingRowBackground="#EEF5FF"
                   GridLinesVisibility="Horizontal"
                   HeadersVisibility="Column"
                   SelectionMode="Single">
@@ -156,26 +174,26 @@
                 <Style TargetType="DataGridRow">
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding Kind}" Value="{x:Static models:DiffKind.Added}">
-                            <Setter Property="Background" Value="#E8F8F5"/>
+                            <Setter Property="Background" Value="#CCE8F8F5"/>
                         </DataTrigger>
                         <DataTrigger Binding="{Binding Kind}" Value="{x:Static models:DiffKind.Removed}">
-                            <Setter Property="Background" Value="#FDEDEC"/>
+                            <Setter Property="Background" Value="#CCFDEDEC"/>
                         </DataTrigger>
                         <DataTrigger Binding="{Binding Kind}" Value="{x:Static models:DiffKind.Modified}">
-                            <Setter Property="Background" Value="#FCF3CF"/>
+                            <Setter Property="Background" Value="#CCFCF3CF"/>
                         </DataTrigger>
                     </Style.Triggers>
                 </Style>
             </DataGrid.RowStyle>
             <DataGrid.Columns>
-                <DataGridTextColumn Header="Loại" Binding="{Binding ChangeDisplay}" Width="85"/>
-                <DataGridTextColumn Header="Dòng A" Binding="{Binding LeftLineNumber}" Width="60"/>
-                <DataGridTextColumn Header="Nội dung văn bản thứ nhất"
+                <DataGridTextColumn Header="Loại" Binding="{Binding ChangeDisplay}" Width="80"/>
+                <DataGridTextColumn Header="#A" Binding="{Binding LeftLineNumber}" Width="45"/>
+                <DataGridTextColumn Header="Nội dung văn bản A"
                                     Binding="{Binding LeftText}"
                                     ElementStyle="{StaticResource WrappedCell}"
                                     Width="*"/>
-                <DataGridTextColumn Header="Dòng B" Binding="{Binding RightLineNumber}" Width="60"/>
-                <DataGridTextColumn Header="Nội dung văn bản thứ hai"
+                <DataGridTextColumn Header="#B" Binding="{Binding RightLineNumber}" Width="45"/>
+                <DataGridTextColumn Header="Nội dung văn bản B"
                                     Binding="{Binding RightText}"
                                     ElementStyle="{StaticResource WrappedCell}"
                                     Width="*"/>
@@ -183,3 +201,4 @@
         </DataGrid>
     </Grid>
 </UserControl>
+
